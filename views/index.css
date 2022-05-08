@@ -1,0 +1,14 @@
+p {
+  color: red;
+  text-align: center;
+}
+h1 {
+  text-align:  center;
+}
+table, th, td {
+  border:  1px solid;
+  font-family:  Helvetica;
+}
+h3{
+  text-align: right;
+}

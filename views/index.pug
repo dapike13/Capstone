@@ -1,0 +1,43 @@
+html
+	head
+		title= 'Courses'
+		style
+			include index.css
+			
+	body
+		script
+			include home.js
+		<h1> Master Scheduling</h1>
+		<h3> Statistics </h3>
+		<form id = 'myForm'>
+			<input type = "file" id = 'csvFile' accept = ".csv" />
+			<br />
+			<input type = "submit" value = "submit" onclick = 'myF()'/>
+		</form>
+		<button onclick= 'c()'>Click me</button>
+
+	table
+		tr
+			th='Course_Id'
+			th= 'Name'
+			th= 'Teacher'
+			th= 'Time'
+			th= 'Dept'
+			th= 'Credits'
+			th= 'Core'
+			th= 'Grade'
+			th= 'Sections'
+			th= 'Room'
+
+		for course in courselist
+			tr
+				td= course.course_id
+				td= course.name
+				td 'Teacher'
+				td <input type = "text" id = course.name value= 'A'>
+				td= course.department
+				td= course.credits
+				td= course.core
+				td= course.grade
+				td= course.sections
+				td= course.room
