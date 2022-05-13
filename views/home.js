@@ -20,6 +20,20 @@ function myF() {
      }
    })
 }
+function sendData(c) {
+  var course = c
+  var time = document.getElementById(c).value
+  fetch("/jsondata", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({course: c, time: time}),
+  })
+  .catch(function(error){
+    console.log(error)
+  })
+}
 
 function csvToArray(str, delimiter = ","){
   const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
@@ -33,6 +47,10 @@ function csvToArray(str, delimiter = ","){
     return el
   })
   return arr
+}
+function getText(num){
+  console.log("Hi")
+  console.log(document.getElementById(num).value)
 }
 
 function c() {

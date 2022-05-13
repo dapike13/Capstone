@@ -15,6 +15,7 @@ html
 			<input type = "submit" value = "submit" onclick = 'myF()'/>
 		</form>
 		<button onclick= 'c()'>Click me</button>
+		
 
 	table
 		tr
@@ -32,9 +33,11 @@ html
 		for course in courselist
 			tr
 				td= course.course_id
-				td= course.name
-				td 'Teacher'
-				td <input type = "text" id = course.name value= 'A'>
+				td= course.name 
+				td Teacher
+				td <form action="saveData" method="POST">
+						<input type = 'text', value = 'A', id = "#{course.name}", name = "course"/> 
+						<input type = 'submit', value = 'Update', id = ${course.course_id}, onclick = 'sendData("#{course.name}")'/>
 				td= course.department
 				td= course.credits
 				td= course.core
