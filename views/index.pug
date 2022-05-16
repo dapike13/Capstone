@@ -9,38 +9,25 @@ html
 			include home.js
 		<h1> Master Scheduling</h1>
 		<h3> Statistics </h3>
+		<h4>Upload sections </h4>
 		<form id = 'myForm'>
 			<input type = "file" id = 'csvFile' accept = ".csv" />
-			<br />
-			<input type = "submit" value = "submit" onclick = 'myF()'/>
+			<br/>
+			<input type = "submit" value = "upload" onclick = 'myF()'/>
 		</form>
-		<button onclick= 'c()'>Click me</button>
 		
-
 	table
 		tr
 			th='Course_Id'
 			th= 'Name'
-			th= 'Teacher'
+			th= 'SectionNum'
 			th= 'Time'
-			th= 'Dept'
-			th= 'Credits'
-			th= 'Core'
-			th= 'Grade'
-			th= 'Sections'
-			th= 'Room'
+			
 
-		for course in courselist
+		for section in sectionlist
 			tr
-				td= course.course_id
-				td= course.name 
-				td Teacher
-				td <form action="saveData" method="POST">
-						<input type = 'text', value = 'A', id = "#{course.name}", name = "course"/> 
-						<input type = 'submit', value = 'Update', id = ${course.course_id}, onclick = 'sendData("#{course.name}")'/>
-				td= course.department
-				td= course.credits
-				td= course.core
-				td= course.grade
-				td= course.sections
-				td= course.room
+				td= section.course_id
+				td= section.name 
+				td= section.sec_num
+				td <input type = 'text', value = "#{section.time}", id = "#{section.sec_num}", name = "section"/> <input type = 'submit', value = 'Update', id = ${section.course_id}, onclick = 'sendData("#{section.course_id}", "#{section.sec_num}")'/>
+				

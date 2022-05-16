@@ -1,34 +1,38 @@
 //https://gist.github.com/aerrity/fd393e5511106420fba0c9602cc05d35
 
-function myFunction() {
-  console.log("first Javascript!!!!")
-}
-
 function myF() {
       const myForm = document.getElementById('myForm');
       const csvFile = document.getElementById('csvFile');
+
       myForm.addEventListener("submit", function(e) {
         e.preventDefault();
         const input = csvFile.files[0];
         const reader = new FileReader();
       reader.onload = function (e) {
+        
         const text = e.target.result;
+        //document.write(text)
         const data = csvToArray(text)
-        document.write(JSON.stringify(data));
-
-      reader.readAsText(input);
+        //document.write(JSON.stringify(data));
+        fetch("/data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({data: data}),
+          })
      }
+     reader.readAsText(input);
    })
 }
-function sendData(c) {
-  var course = c
-  var time = document.getElementById(c).value
+function sendData(c, s) {
+  var time = document.getElementById(s).value
   fetch("/jsondata", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({course: c, time: time}),
+    body: JSON.stringify({course: c, time: time, secNum: s}),
   })
   .catch(function(error){
     console.log(error)
@@ -48,22 +52,4 @@ function csvToArray(str, delimiter = ","){
   })
   return arr
 }
-function getText(num){
-  console.log("Hi")
-  console.log(document.getElementById(num).value)
-}
 
-function c() {
-  console.log("Fun")
-  fetch('/clicked', {method: 'POST'})
-  .then(function(response){
-    if(response.ok){
-      console.log("Great")
-      return
-    }
-
-  })
-  .catch(function(error) {
-    console.log(error)
-  })
-}
