@@ -13,7 +13,7 @@ function myF() {
         const text = e.target.result;
         //document.write(text)
         const data = csvToArray(text)
-        //document.write(JSON.stringify(data));
+        document.write(JSON.stringify(data));
         fetch("/data", {
           method: "POST",
           headers: {
@@ -25,6 +25,7 @@ function myF() {
      reader.readAsText(input);
    })
 }
+
 function sendData(c, s) {
   var time = document.getElementById(s).value
   fetch("/jsondata", {
@@ -39,9 +40,28 @@ function sendData(c, s) {
   })
 }
 
+function teacherSched() {
+  var t = document.getElementById('tSearch').value
+  fetch("/teachers", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({teacher: t}),
+  })
+  .catch(function(error){
+    console.log(error)
+  })
+  
+}
+
 function csvToArray(str, delimiter = ","){
-  const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+  console.log(str)
+  const headers = str.slice(0, str.indexOf("\r")).split(delimiter);
+  console.log(headers)
+  //headers = headers.replace(/(\r)/gm, "");
   const rows = str.slice(str.indexOf("\n")+1).split("\n");
+  //rows = rows.replace(/(\r)/gm, "");
   const arr = rows.map(function(row){
     const values = row.split(delimiter)
     const el = headers.reduce(function(object, header, index){

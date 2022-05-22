@@ -8,7 +8,39 @@ h1 {
 table, th, td {
   border:  1px solid;
   font-family:  Helvetica;
+  border-collapse: collapse;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
 }
-h3{
+tr{
+  font-size: 20px;
+}
+
+tr:nth-child(even) {background-color: #f2f2f2;}
+tr:hover {background-color: lightblue;}
+
+th{
+  background-color: black;
+  color: white;
+  font-size: 30px;
+}
+.header{
+  border-style: dotted;
+  background-color: lightblue;
+}
+.Stats{
   text-align: right;
+  border-style: solid;
+}
+body{
+  background-color: #FFFFBF;
+  font-family: Helvetica;
+}
+.button {
+  background-color: black;
+  color:  white;
+  text-align: center;
+  font-size: 16px;
+  padding:  10px 24px;
 }
