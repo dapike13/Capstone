@@ -15,7 +15,7 @@ id,first,last,dept
 114,Amy,Hall,pe
 115,Crystal,Rivera,art
 116,Andrea,Campbell,music
-117,Kelly,Mitchell,business
+117,Kelly,Mitchell,technical
 118,Travis,Carter,math
 119,Jeffrey,Roberts,math
 120,Nathan,Gomez,math
@@ -25,13 +25,9 @@ id,first,last,dept
 124,Jesse,Diaz,english
 125,Paul,Parker,english
 126,Dustin,Cruz,history
-127,Anthony,Edwards,history
 128,Hannah,Collins,language
-129,Madison,Reyes,pe
+129,Madison,Reyes,technical
 130,Ashley,Stewart,pe
 131,Sarah,Morris,pe
-132,Alexis,Morales,music
-133,Samantha,Murphy,music
-134,Jessica,Cook,business
 135,Elizabeth,Smith,art
-136,Taylor,Freedman,art
+127,Henry,Toole,art

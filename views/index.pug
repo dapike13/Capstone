@@ -10,17 +10,17 @@ html
 		<div class= "header">
 			<h1> Master Scheduling</h1>
 		</div>
-		<div class = "Stats"
+		<div class = "Stats">
 			<h3> Statistics </h3>
 			<h6> Num Students Scheduled </h6>
 
 		</div>
-		<div class = ="buttons">
+		<div class = "buttons">
 			a(href="students")
 				button(type="button" class ="button") Students
 			a(href="teachers")
 				button(type="button" class ="button") Teachers
-			<button type="button" class = "button"> Schedule </button>
+			<button type="button" class = "button"> Schedule All </button>
 			<br/>
 			<button type="button" class = "button"> Data </button>
 			<button type="button" class = "button"> Filter </button>
@@ -32,18 +32,29 @@ html
 			<br/>
 			<input type = "submit" value = "upload" onclick = 'myF()'/>
 		</form>
-		
+		<h4>Upload StudentSchedules</h4>
+		<form id = 'StuSched'>
+			<input type = "file" id = 'sched' accept = ".csv" />
+			<br/>
+			<input type = "submit" value = "upload" onclick = 'myS()'/>
+		</form>
+
 	table
 		tr
-			th='Course_Id'
+			th=	'Schedule?'
+			th= 'Course_Id'
 			th= 'Name'
 			th= 'SectionNum'
 			th= 'TeacherID'
 			th= 'Teacher Name'
 			th= 'Time'
 			th= 'Num Students'
-		for section in sectionlist
+		for section in sectionlist 
 			tr
+				if section.sec_num == 1
+					td <input type= 'submit' value = 'Schedule' name='#{section.course_id}check' , onclick = 'scheduleCheck("#{section.course_id}")', id = '#{section.course_id}check' />
+				else
+					td= ""
 				td= section.course_id
 				td= section.name 
 				td= section.sec_num

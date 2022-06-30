@@ -7,6 +7,22 @@ html
 	body
 		script
 			include home.js
-		h1="Teachers"
-		<input type="text" placeholder="Search.." id="tSearch">
-			<button type="submit" onclick = 'teacherSched()'>Submit</button>
+		h1= tea
+		form(method= 'POST' action='')
+			div.form-group
+				label(for='name') Teacher:
+				input#name.form-control(type='text', placeholder='Teacher' name='name')
+			<button type="submit">Submit</button>
+
+		table
+			tr
+				th= 'Name'
+				th= 'Sec_Num'
+				th= 'Time'
+			for section in teacherSched
+				tr
+					td= section.name
+					td= section.sec_num
+					td= section.time
+
+

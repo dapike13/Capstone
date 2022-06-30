@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+html
+	head
+		title= 'Student Schedule'
+		style
+			include index.css
+	body
+		script
+			include home.js
+		h1= 'Student Name'
+
+
+		h3= 'Schedule'
+		table
+			tr
+				th= 'Course_Num'
+				th= 'Course'
+				th= 'Teacher'
+				th= 'Time'
+
+		h3= 'Requests'
+		table
+			tr
+				th='Course_Num'
+				th= 'Course'
+			for r in requests
+				tr
+					td= r.id
+					td= r.name
+
+
+

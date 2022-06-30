@@ -1,5 +1,6 @@
 //https://gist.github.com/aerrity/fd393e5511106420fba0c9602cc05d35
 
+//Upload section data
 function myF() {
       const myForm = document.getElementById('myForm');
       const csvFile = document.getElementById('csvFile');
@@ -26,6 +27,63 @@ function myF() {
    })
 }
 
+//Upload student schedule data
+function myS() {
+  console.log("YEAH")
+      const myForm = document.getElementById('StuSched');
+      const csvFile = document.getElementById('sched');
+
+      myForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const input = csvFile.files[0];
+        const reader = new FileReader();
+      reader.onload = function (e) {
+        
+        const text = e.target.result;
+        //document.write(text)
+        const data = csvToArray(text)
+        document.write(JSON.stringify(data));
+        fetch("/sched", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({data: data}),
+          })
+     }
+     reader.readAsText(input);
+   })
+}
+
+function scheduleCheck(s){
+  console.log(s);
+  console.log("Checked")
+    fetch("/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({courseID: s}),
+    })
+    .catch(function(error){
+      console.log(error)
+    })
+}
+
+
+function sendStudents(s){
+  fetch("/studentSched", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    }, 
+    body: JSON.stringify({stu: s}),
+  })
+  .catch(function(error){
+    console.log(error)
+  })
+  }
+
 function sendData(c, s) {
   var time = document.getElementById(s).value
   fetch("/jsondata", {
@@ -39,7 +97,7 @@ function sendData(c, s) {
     console.log(error)
   })
 }
-
+/**
 function teacherSched() {
   var t = document.getElementById('tSearch').value
   fetch("/teachers", {
@@ -54,6 +112,7 @@ function teacherSched() {
   })
   
 }
+**/
 
 function csvToArray(str, delimiter = ","){
   console.log(str)

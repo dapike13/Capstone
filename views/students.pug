@@ -5,4 +5,22 @@ html
 		style
 			include index.css
 	body
-		h1="Students"
+		script
+			include home.js
+		h1= "Students"
+		table
+			tr
+				th= 'ID'
+				th= 'Grade'
+				th= 'First Name'
+				th= 'Last Name'
+				th= 'Percent Scheduled'
+			for s in stu
+				tr
+					td 
+						a(href= '/students/'+s.id) #{s.id}
+					td= s.grade
+					td= s.first
+					td= s.last
+					td= 0
+					

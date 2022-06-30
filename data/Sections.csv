@@ -1,0 +1,192 @@
+course_id,name,sec_number,time,teacher_id
+101,Int 1 CP,1,,101
+101,Int 1 CP,2,,102
+101,Int 1 CP,3,,102
+102,Int 1 H,1,,101
+102,Int 1 H,2,,101
+103,Int 2 CP,1,,118
+103,Int 2 CP,2,,102
+103,Int 2 CP,3,,102
+104,Int 2 H,1,,118
+104,Int 2 H,2,,118
+105,Int 3 CP,1,,118
+105,Int 3 CP,2,,119
+105,Int 3 CP,3,,119
+106,Int 3 H,1,,119
+106,Int 3 H,2,,102
+107,Statistics H,1,,119
+108,QR CP,1,,120
+109,Calc H,1,,120
+110,AP Calc AB,1,,120
+111,AP Calc BC,1,,120
+112,AP Comp Sci Principles,1,,101
+113,AP Comp Sci A,1,,101
+114,AP Statistics,1,,119
+115,Intro to Programming,1,,120
+116,Cybersecurity,1,,118
+201,Physics CP,1,,103
+201,Physics CP,2,,103
+201,Physics CP,3,,103
+202,Physics H,1,,103
+202,Physics H,2,,104
+203,Chemistry CP,1,,104
+203,Chemistry CP,2,,104
+203,Chemistry CP,3,,105
+204,Chemistry H,1,,105
+204,Chemistry H,2,,104
+205,Biology CP,1,,121
+205,Biology CP,2,,121
+205,Biology CP,3,,121
+206,Biology H,1,,122
+206,Biology H,2,,122
+207,Anatomy and Physiology ,1,,122
+207,Anatomy and Physiology ,2,,121
+208,Biomedical Science,1,,122
+209,Engineering,1,,122
+209,Engineering,2,,105
+210,Environmental Science ,1,,105
+211,AP Biology,1,,121
+212,AP Chemistry,1,,105
+213,AP Physics 1,1,,103
+214,AP Physics 2,1,,104
+301,English 9 CP,1,,107
+301,English 9 CP,2,,107
+301,English 9 CP,3,,106
+302,English 9 H,1,,107
+302,English 9 H,2,,106
+303,English 10 CP,1,,107
+303,English 10 CP,2,,107
+303,English 10 CP,3,,106
+304,English 10 H,1,,106
+304,English 10 H,2,,123
+305,English 11 CP,1,,123
+305,English 11 CP,2,,124
+305,English 11 CP,3,,123
+306,English 11 H,1,,123
+307,English 12 CP,1,,124
+307,English 12 CP,2,,124
+307,English 12 CP,3,,125
+308,English 12 H,1,,125
+309,AP English Lang,1,,106
+310,AP English Lit,1,,123
+311,Journalism,1,,124
+311,Journalism,2,,124
+312,Print to Film,1,,125
+312,Print to Film,2,,125
+313,Playwriting ,1,,125
+401,World History CP,1,,108
+401,World History CP,2,,108
+401,World History CP,3,,109
+402,World History H,1,,108
+402,World History H,2,,109
+403,US History I CP,1,,108
+403,US History I CP,2,,109
+403,US History I CP,3,,109
+404,US History I H,1,,110
+404,US History I H,2,,110
+405,US History II CP,1,,110
+405,US History II CP,2,,110
+406,US History II H,1,,126
+406,US History II H,2,,126
+407,AP US History,1,,110
+408,AP World History,1,,108
+409,Psychology ,1,,109
+410,AP Psychology ,1,,126
+411,Sociology,1,,126
+411,Sociology,2,,126
+501,Spanish I,1,,111
+501,Spanish I,2,,111
+502,Spanish II,1,,112
+502,Spanish II,2,,112
+503,Spanish III,1,,111
+503,Spanish III,2,,112
+504,Spanish IV,1,,111
+505,AP Spanish,1,,111
+511,French I,1,,112
+511,French I,2,,112
+512,French II,1,,128
+512,French II,2,,128
+513,French III,1,,128
+514,French IV,1,,128
+515,AP French,1,,128
+609,PE 9,1,,113
+609,PE 9,2,,113
+609,PE 9,3,,113
+609,PE 9,4,,114
+609,PE 9,5,,114
+609,PE 9,6,,131
+610,PE 10,1,,114
+610,PE 10,2,,114
+610,PE 10,3,,114
+610,PE 10,4,,113
+610,PE 10,5,,113
+610,PE 10,6,,131
+611,PE 11,1,,113
+611,PE 11,2,,114
+611,PE 11,3,,114
+611,PE 11,4,,113
+611,PE 11,5,,113
+611,PE11,6,,131
+612,PE 12,1,,113
+612,PE 12,2,,114
+612,PE 12,3,,114
+612,PE 12,4,,114
+612,PE 12,5,,113
+612,PE 12,6,,131
+613,Health,1,,131
+613,Health,2,,131
+613,Health,3,,131
+701,Art I,1,,115
+701,Art I,2,,115
+701,Art I,3,,115
+702,Art II,1,,115
+702,Art II,2,,115
+703,Photo,1,,135
+703,Photo,2,,115
+703,Photo,3,,115
+704,Ceramics,1,,135
+704,Ceramics,2,,135
+704,Ceramics,3,,115
+705,Drawing,1,,135
+705,Drawing,2,,135
+705,Drawing,3,,115
+706,AP 2-D Art and Design,1,,135
+801,Wind Ensemble,1,,116
+802,Orchestra,1,,116
+803,Choir,1,,116
+804,Dance,1,,127
+804,Dance,2,,127
+804,Dance,3,,127
+805,Guitar,1,,116
+805,Guitar,2,,116
+805,Guitar,3,,135
+806,Piano,1,,116
+806,Piano,2,,116
+806,Piano,3,,135
+901,Business,1,,117
+901,Business,2,,117
+901,Business,3,,117
+902,Finance,1,,117
+902,Finance,2,,117
+902,Finance,3,,117
+903,Chefs,1,,129
+903,Chefs,2,,129
+903,Chefs,3,,129
+904,Fashion Design,1,,129
+904,Fashion Design,2,,129
+904,Fashion Design,3,,129
+999,Study,1,,115
+999,Study,2,,117
+999,Study,3,,117
+999,Study,4,,117
+999,Study,5,,117
+999,Study,6,,127
+999,Study,7,,127
+999,Study,8,,129
+999,Study,9,,129
+999,Study,10,,129
+999,Study,11,,129
+999,Study,12,,131
+999,Study,13,,131
+999,Study,14,,131
+999,Study,15,,135
