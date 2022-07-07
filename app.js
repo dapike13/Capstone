@@ -1,3 +1,7 @@
+//git add .
+//git commit -m "Comment"
+//git push
+
 const express = require('express')
 const app = express()
 
@@ -13,12 +17,13 @@ app.use(express.static('views'));
 
 //Global Variables
 var sectionlist =[]
-const teacherMap = new Map();
-const times = ["A", "B", "C", "D", "E", "F", "G"]
-const sched = [0,0,0,0,0,0,0]
-const coursesToSched = []
-const studentRequests = new Map();
-const studentMap = new Map();
+var teacherMap = new Map();
+var studentSchedule = new Map();
+var times = ["A", "B", "C", "D", "E", "F", "G"]
+
+var coursesToSched = []
+var studentRequests = new Map();
+var studentMap = new Map();
 
 const client = new Client({
   user: 'daniellebodine',
@@ -31,6 +36,14 @@ const client = new Client({
 client.connect()
 
 app.post('/jsondata', (req, res) => {
+  for(var i =0; i < sectionlist.length; i++)
+  {
+    if(sectionlist[i].course_id == req.body.course && sectionlist[i].sec_num == req.body.secNum)
+    {
+      sectionlist[i].edit = false
+      console.log(sectionlist[i].edit)
+    }
+  }
   client.query("UPDATE sections SET time = $1 WHERE course_id = $2 and sec_number = $3", [req.body.time, req.body.course, req.body.secNum], (error, result) => {
     if(error) {
       console.log(error)
@@ -41,7 +54,9 @@ app.post('/jsondata', (req, res) => {
   })
 })
 
-
+app.post('/test', (req, res) => {
+  res.json({time: "A"})
+})
 //Insert data from csv into sections
 app.post('/data', (req, res) => {
   var sectionlist = []
@@ -85,24 +100,117 @@ app.post('/', (req, res) => {
     scheduleCourse(req.body.courseID)
   }
   console.log(coursesToSched)
-
   //Need to reload page!!!
-  res.render('index', {'sectionlist': sectionlist})
+  res.render('index', {'sectionlist': sectionlist, 'extra': 5})
+})
+
+app.post('/edit', (req, res) => {
+  console.log("EDIT")
+  for(var i =0; i < sectionlist.length; i++)
+  {
+    if(sectionlist[i].course_id == req.body.courseID && sectionlist[i].sec_num == req.body.secNum)
+    {
+      sectionlist[i].edit = true
+      console.log(sectionlist[i].edit)
+    }
+  }
 })
 
 function scheduleCourse(s){
-  console.log(s)
-  //Find Course in section list
-  //Find Teachers -- Check periods teachers are free
-  //Get students signed up for course --count how many are free
+  //console.log(teacherMap)
+  console.log("Course to sched:" + s)
+  var sectionNums = []
+  var teacherID = []
+  var studentList = [];  //List of students signed up for the course
+  var numStu = 0
+  var timesToNum = new Map()
+  var course;
+  var teacher;
+  var indicesOfTimes = [];
   for(var i=0; i < sectionlist.length; i++)
   {
-    if(sectionlist[i].course_id == s)
+    if(sectionlist[i].course_id == s) //Found course in sectionlist
     {
-      sectionlist[i].time = 'A'
+      sectionNums.push(sectionlist[i].sec_num)
+      teacherID.push(sectionlist[i].teacherID)
+      course = sectionlist[i].name
     }
   }
+  studentRequests.forEach((value, key) => {
+        if (value.includes(parseInt(s, 10))) {
+          studentList.push(key)
+                  }
+      })
+  for(var i = 0; i<teacherID.length;i++)
+  {
+    console.log(teacherID[i])
+    var availTimes = teacherMap.get(teacherID[i])
+    console.log(availTimes)
+    for(var j =0; j < availTimes.length;j++)
+    {
+      numStu = 0;
+      if(availTimes[j] == 0)
+      {
+        for(var k = 0 ; k< studentList.length; k++)
+        {
+          var stuAvailTimes = studentMap.get(studentList[k])
+          if(stuAvailTimes[j]==0){numStu++;}
+        }
+      }
+      timesToNum.set(times[j], numStu)
+      console.log(times[j] + numStu)
+    }
+    var max = 0
+    var maxTime;
+    timesToNum.forEach((value, key) => {
+      if(value > max) {
+        max = value
+        maxTime = key
+      }
+    })
+    var index = times.indexOf(maxTime)
+    indicesOfTimes.push(index)
+    availTimes[index] = 1
+    console.log("Inside the Loop: "+teacherID[i])
+    teacherMap.set(teacherID[i], availTimes)
+    for(var q=0; q < sectionlist.length; q++)
+    {
+      if(sectionlist[q].course_id == s && sectionlist[q].sec_num == sectionNums[i])
+      {
+        sectionlist[q].time = maxTime
+        sectionlist[q].edit = false
+      }
+    }
 }
+console.log(indicesOfTimes)
+    while(studentList.length!=0)
+    {
+      var randIndex = Math.floor(Math.random()*indicesOfTimes.length)
+      var stuAvailTimes = studentMap.get(studentList[0])
+      while(stuAvailTimes[randIndex] != 0)
+      {
+        randIndex = Math.floor(Math.random()*indicesOfTimes.length)
+      }
+      stuAvailTimes[randIndex] = 1
+      studentMap.set(studentList[0], stuAvailTimes)
+      var course = {
+          'course_num': s,
+          'course': 'course',
+          'teacher': "Pike",
+          'time': maxTime,
+        }
+        var sched = studentSchedule.get(studentList[0])
+        sched.push(course)
+        
+        studentSchedule.set(studentList[0], sched)
+        studentList.shift()
+    }
+    //console.log(studentSchedule)
+}
+function unScheduleCourse(s){
+  console.log("unScheduleCourse")
+}
+
 //Get student info
 app.get('/students', (req, res) =>{
   var students = []
@@ -124,9 +232,11 @@ app.get('/students', (req, res) =>{
     })
     .catch(e => console.log(e))
 })
-
 //Get specific student schedule based on ID
 app.get('/students/:id', (req, res) =>{
+  var sched = studentSchedule.get(parseInt(req.params.id, 10))
+  console.log(sched)
+  console.log(req.params.id)
   var requests = []
   client
     .query('SELECT requests.course_id, courses.name FROM requests INNER JOIN courses ON courses.course_id = requests.course_id WHERE student_id = '+ req.params.id)
@@ -140,12 +250,11 @@ app.get('/students/:id', (req, res) =>{
         console.log("Hello")
         requests.push(request)
       }
-      res.render('studentSched', {'requests': requests})
+      res.render('studentSched', {'requests': requests, 'schedule': sched})
 
     })
 
 })
-
 //Get teachers
 app.get('/teachers', (req, res) =>{
   var teacherSched = []
@@ -197,21 +306,23 @@ app.get('/', (req, res) => {
       'teacherID': result.rows[i].teacher_id,
       'teacher': result.rows[i].last_name,
       'numStud': result.rows[i].num_students,
+      'edit': true,
     } 
     if(!teacherMap.has(result.rows[i].teacher_id)) {
+          var sched = [0,0,0,0,0,0,0]
           teacherMap.set(result.rows[i].teacher_id, sched);
     }
     if(times.includes(result.rows[i].time)) {
       var ind = times.indexOf(result.rows[i].time);
       teacherMap.get(result.rows[i].teacher_id)[ind]=1;
+      console.log("Set to 1")
     }
     sectionlist.push(section)
     }
     //console.log(teacherMap);
-    res.render('index', {'sectionlist': sectionlist})
+    res.render('index', {'sectionlist': sectionlist, 'extra': 8})
   })
     .catch(e => console.log(e))
-
     client
       .query('SELECT * from requests')
       .then(result => {
@@ -226,7 +337,9 @@ app.get('/', (req, res) => {
             studentRequests.get(result.rows[i].student_id).push(result.rows[i].course_id);
           }
           if(!studentMap.has(result.rows[i].student_id)){
+            var sched = [0,0,0,0,0,0,0]
             studentMap.set(result.rows[i].student_id, sched);
+            studentSchedule.set(result.rows[i].student_id, []);
           }
         }
       })

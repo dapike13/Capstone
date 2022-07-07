@@ -17,6 +17,12 @@ html
 				th= 'Course'
 				th= 'Teacher'
 				th= 'Time'
+			for s in schedule
+				tr
+					td= s.course_num
+					td= s.course
+					td= s.teacher
+					td= s.time
 
 		h3= 'Requests'
 		table
@@ -27,6 +33,3 @@ html
 				tr
 					td= r.id
 					td= r.name
-
-
-

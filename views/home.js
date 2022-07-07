@@ -69,7 +69,18 @@ function scheduleCheck(s){
       console.log(error)
     })
 }
-
+function updateEdit(s, n){
+  fetch("/edit", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({editBtn: true, courseID: s, secNum: n}),
+  })
+  .catch(function(error){
+    console.log(error)
+  })
+}
 
 function sendStudents(s){
   fetch("/studentSched", {
@@ -83,7 +94,19 @@ function sendStudents(s){
     console.log(error)
   })
   }
-
+function receiveHello(){
+  fetch("/test", {
+    method: "POST",})
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(data) {
+    console.log(data.time)
+  })
+ .catch(function(error){
+    console.log(error)
+  })
+}
 function sendData(c, s) {
   var time = document.getElementById(s).value
   fetch("/jsondata", {
@@ -96,6 +119,7 @@ function sendData(c, s) {
   .catch(function(error){
     console.log(error)
   })
+  
 }
 /**
 function teacherSched() {

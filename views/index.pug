@@ -13,6 +13,7 @@ html
 		<div class = "Stats">
 			<h3> Statistics </h3>
 			<h6> Num Students Scheduled </h6>
+			h5=extra
 
 		</div>
 		<div class = "buttons">
@@ -22,7 +23,7 @@ html
 				button(type="button" class ="button") Teachers
 			<button type="button" class = "button"> Schedule All </button>
 			<br/>
-			<button type="button" class = "button"> Data </button>
+			<button type="button" class = "button" onclick= "receiveHello()"> Data </button>
 			<button type="button" class = "button"> Filter </button>
 			<button type="button" class = "button"> Modes </button>
 		</div>
@@ -52,7 +53,7 @@ html
 		for section in sectionlist 
 			tr
 				if section.sec_num == 1
-					td <input type= 'submit' value = 'Schedule' name='#{section.course_id}check' , onclick = 'scheduleCheck("#{section.course_id}")', id = '#{section.course_id}check' />
+					td <input type= 'submit' value='Schedule' name='#{section.course_id}check' , onclick = 'scheduleCheck("#{section.course_id}")', id = '#{section.course_id}check' />
 				else
 					td= ""
 				td= section.course_id
@@ -60,6 +61,9 @@ html
 				td= section.sec_num
 				td= section.teacherID
 				td= section.teacher
-				td <input type = 'text', value = "#{section.time}", id = "#{section.sec_num}", name = "section"/> <input type = 'submit', value = 'Update', id = ${section.course_id}, onclick = 'sendData("#{section.course_id}", "#{section.sec_num}")'/>
+				if section.edit == true
+					td <input type = 'text', value = "#{section.time}", id = "#{section.sec_num}", name = "section"/> <input type = 'submit', value = 'Update', id = ${section.course_id}, onclick = 'sendData("#{section.course_id}", "#{section.sec_num}")'/>
+				else
+					td #{section.time} <button type = 'button' onclick='updateEdit("#{section.course_id}", "#{section.sec_num}")'> Edit </button>
 				td= section.num_students
 				
