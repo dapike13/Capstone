@@ -6,26 +6,15 @@ html
 			include index.css
 	body
 		script
-			include home.js
+			include index.js
 		<div class= "header">
 			<h1> Master Scheduling</h1>
 		</div>
-		<div class = "Stats">
-			<h3> Statistics </h3>
-			<h6> Num Students Scheduled </h6>
-			h5=extra
-
-		</div>
+		
 		<div class = "buttons">
-			a(href="students")
-				button(type="button" class ="button") Students
-			a(href="teachers")
-				button(type="button" class ="button") Teachers
-			<button type="button" class = "button"> Schedule All </button>
-			<br/>
-			<button type="button" class = "button" onclick= "receiveHello()"> Data </button>
-			<button type="button" class = "button"> Filter </button>
-			<button type="button" class = "button"> Modes </button>
+			a(href="scheduler")
+				button(type="button" class ="button" onclick='receiveSections()') Start/Return
+			<button type="button" class = "button"> Open File </button>
 		</div>
 		<h4>Upload sections </h4>
 		<form id = 'myForm'>
@@ -39,31 +28,6 @@ html
 			<br/>
 			<input type = "submit" value = "upload" onclick = 'myS()'/>
 		</form>
+		
 
-	table
-		tr
-			th=	'Schedule?'
-			th= 'Course_Id'
-			th= 'Name'
-			th= 'SectionNum'
-			th= 'TeacherID'
-			th= 'Teacher Name'
-			th= 'Time'
-			th= 'Num Students'
-		for section in sectionlist 
-			tr
-				if section.sec_num == 1
-					td <input type= 'submit' value='Schedule' name='#{section.course_id}check' , onclick = 'scheduleCheck("#{section.course_id}")', id = '#{section.course_id}check' />
-				else
-					td= ""
-				td= section.course_id
-				td= section.name 
-				td= section.sec_num
-				td= section.teacherID
-				td= section.teacher
-				if section.edit == true
-					td <input type = 'text', value = "#{section.time}", id = "#{section.sec_num}", name = "section"/> <input type = 'submit', value = 'Update', id = ${section.course_id}, onclick = 'sendData("#{section.course_id}", "#{section.sec_num}")'/>
-				else
-					td #{section.time} <button type = 'button' onclick='updateEdit("#{section.course_id}", "#{section.sec_num}")'> Edit </button>
-				td= section.num_students
-				
+	

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+html
+	head
+		title= 'Courses'
+		style
+			include index.css
+	body
+		script
+			include scheduler.js
+		<div class= "header">
+			<h1> Master Scheduling</h1>
+		</div>
+		<div class = "Stats">
+			<h3> Statistics </h3>
+			<h6> Num Students Scheduled </h6>
+
+		</div>
+		<div class="SchedButton">
+			button(type = "button" class = "button" onclick= "receiveSections()") Start Schedule
+		</div>
+		<div class = "buttons">
+			a(href="students")
+				button(type="button" class ="button") Students
+			a(href="teachers")
+				button(type="button" class ="button") Teachers
+			<button type="button" class = "button"> Schedule All </button>
+			<button type="button" class = "button" onclick="scheduleCourses()"> Schedule Selected </button>
+			<br/>
+			<button type="button" class = "button"> Data </button>
+			<button type="button" class = "button"> Filter </button>
+			<button type="button" class = "button"> Modes </button>
+		</div>
+
+	table
+		tr
+			th= 'Course_Id'
+			th= 'Name'
+			th= 'SectionNum'
+			th= 'TeacherID'
+			th= 'Teacher Name'
+			th= 'Time'
+			th= 'Num Students'
+		for section in sectionlist 
+			tr
+				if section.sec_num == 1
+					td <input type = 'checkbox' id ='#{section.course_id}check' name = '#{section.course_id}check' hidden> <label for='#{section.course_id}check'> #{section.course_id} </label>
+				else
+					td= section.course_id
+				td= section.name 
+				td= section.sec_num
+				td= section.teacherID
+				td= section.teacher
+				if section.edit == true
+					td <input type = 'text', value = "#{section.time}", id = '#{section.course_id}label#{section.sec_num}', name = "section"/> <input type = 'submit', value = 'Update', id = ${section.course_id}, onclick = 'sendData("#{section.course_id}", "#{section.sec_num}")'/>
+				else
+					td <h5 id ='#{section.course_id}text#{section.sec_num}'> #{section.time} </h5> <button type = 'button' id ='#{section.course_id}edit#{section.sec_num}'  onclick='updateEdit("#{section.course_id}", "#{section.sec_num}")' hidden> Edit </button>
+				td <p id='#{section.course_id}num#{section.sec_num}'> #{section.num_students} </p>
+
+
+
+//- td <input type= 'submit' value='Schedule' name='#{section.course_id}check' , onclick = 'scheduleCheck("#{section.course_id}")', id = '#{section.course_id}check' hidden/>

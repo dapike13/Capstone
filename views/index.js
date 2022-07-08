@@ -1,4 +1,33 @@
+//JS Page for index.pug (Homepage)
 //https://gist.github.com/aerrity/fd393e5511106420fba0c9602cc05d35
+
+//Global Variables
+var sectionlist =[]
+var teacherMap = new Map();
+var studentSchedule = new Map();
+var times = ["A", "B", "C", "D", "E", "F", "G"]
+
+var coursesToSched = []
+var studentRequests = new Map();
+var studentMap = new Map();
+
+//Receive Section Data
+function receiveSections(){
+  console.log("WorkeD!!!!!")
+  fetch("/", {
+    method: "POST",})
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(data) {
+    console.log("It worked!!!")
+    sectionlist = data.sections
+    console.log(sectionlist)
+  })
+ .catch(function(error){
+    console.log(error)
+  })
+}
 
 //Upload section data
 function myF() {
@@ -94,19 +123,8 @@ function sendStudents(s){
     console.log(error)
   })
   }
-function receiveHello(){
-  fetch("/test", {
-    method: "POST",})
-  .then(function(response) {
-    return response.json();
-  })
-  .then(function(data) {
-    console.log(data.time)
-  })
- .catch(function(error){
-    console.log(error)
-  })
-}
+
+
 function sendData(c, s) {
   var time = document.getElementById(s).value
   fetch("/jsondata", {
