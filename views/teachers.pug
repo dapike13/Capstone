@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 html
 	head
-		title= 'Students'
+		title= 'Teachers'
 		style
 			include index.css
 	body
 		script
 			include index.js
-		h1= tea
-		form(method= 'POST' action='')
-			div.form-group
-				label(for='name') Teacher:
-				input#name.form-control(type='text', placeholder='Teacher' name='name')
-			<button type="submit">Submit</button>
+		h1= 'Teachers'
 
-		table
-			tr
-				th= 'Name'
-				th= 'Sec_Num'
-				th= 'Time'
-			for section in teacherSched
+	table
+		tr
+			th= 'ID'
+			th= 'First Name'
+			th= 'Last Name'
+			th= 'Department'
+			for t in listOfTeachers
 				tr
-					td= section.name
-					td= section.sec_num
-					td= section.time
-
+					td 
+						a(href= '/teachers/'+t.id) #{t.id}
+					td= t.fname
+					td= t.lname
+					td= t.dept
+					
 

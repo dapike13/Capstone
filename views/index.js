@@ -98,6 +98,7 @@ function scheduleCheck(s){
       console.log(error)
     })
 }
+
 function updateEdit(s, n){
   fetch("/edit", {
     method: "POST",

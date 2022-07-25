@@ -19,16 +19,15 @@ html
 			button(type = "button" class = "button" onclick= "receiveSections()") Start Schedule
 		</div>
 		<div class = "buttons">
-			a(href="students")
-				button(type="button" class ="button") Students
-			a(href="teachers")
-				button(type="button" class ="button") Teachers
+			<button type="button" class = "button" onclick="savePrompt('students')"> Students </button>
+			<button type="button" class = "button" onclick="savePrompt('teachers')"> Teachers </button>
 			<button type="button" class = "button"> Schedule All </button>
 			<button type="button" class = "button" onclick="scheduleCourses()"> Schedule Selected </button>
 			<br/>
 			<button type="button" class = "button"> Data </button>
 			<button type="button" class = "button"> Filter </button>
 			<button type="button" class = "button"> Modes </button>
+			<button type="button" class = "button" onclick="save()"> Save </button>
 		</div>
 
 	table

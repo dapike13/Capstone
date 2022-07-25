@@ -36,6 +36,7 @@ const client = new Client({
 
 client.connect()
 
+//Update time of section in database
 app.post('/jsondata', (req, res) => {
   for(var i =0; i < sectionlist.length; i++)
   {
@@ -55,9 +56,11 @@ app.post('/jsondata', (req, res) => {
   })
 })
 
+
 app.post('/test', (req, res) => {
   res.json({time: "A"})
 })
+
 //Insert data from csv into sections
 app.post('/data', (req, res) => {
   var sectionlist = []
@@ -97,10 +100,39 @@ app.post('/', (req, res) => {
   console.log("POST worked!!!")
 })
 
+//Send student and teacher data to client
 app.post("/scheduler", (req, res) => {
   const objTM = Object.fromEntries(teacherMap)
   const objSM = Object.fromEntries(studentMap)
   res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM})
+})
+
+app.post("/save", (req, res) => {
+  client
+    .query("DELETE FROM student_schedule")
+    .catch(e => console.log(e))
+  studentMap = new Map(Object.entries(req.body.studentSched))
+  sectionlist = req.body.sections
+  //Could modify so only update ones that have been changed...
+  for(var i =0; i < sectionlist.length; i++)
+  {
+    client
+      .query("UPDATE sections SET time = $1 WHERE course_id = $2 and sec_number = $3", [sectionlist[i].time, sectionlist[i].course_id, sectionlist[i].sec_num])
+      .catch(e => console.log(e))
+  }
+  studentMap.forEach((value, key) => {
+    var id = key
+    var sched = value.sections
+    for(var k =0; k < sched.length; k++)
+    {
+      if(sched[k]!=null){
+        client
+          .query("INSERT INTO student_schedule VALUES ($1, $2, $3)", [sched[k].course_num, sched[k].secNum, id])
+          .catch(e => console.log(e))
+      }
+    }
+  })
+
 })
 
 app.post('/edit', (req, res) => {
@@ -117,7 +149,7 @@ app.post('/edit', (req, res) => {
 
 
 
-//Get student info
+//Get student info, display on student page
 app.get('/students', (req, res) =>{
   var students = []
   client
@@ -138,40 +170,105 @@ app.get('/students', (req, res) =>{
     })
     .catch(e => console.log(e))
 })
+
 //Get specific student schedule based on ID
 app.get('/students/:id', (req, res) =>{
-  var sched = studentSchedule.get(parseInt(req.params.id, 10))
-  console.log(sched)
   console.log(req.params.id)
-  var requests = []
+  var requests = studentRequests.get(parseInt(req.params.id))
+  var actualReq = []
+  for(var i =0; i < requests.length; i++)
+  {
+    for(var j =0; j < sectionlist.length; j++)
+    {
+      if(requests[i] == sectionlist[j].course_id){
+              var r = {
+                'id': requests[i],
+                'name': sectionlist[j].name
+              }
+              j = sectionlist.length
+      }
+    }
+    actualReq.push(r)
+        }
+  var sched = []
   client
-    .query('SELECT requests.course_id, courses.name FROM requests INNER JOIN courses ON courses.course_id = requests.course_id WHERE student_id = '+ req.params.id)
+    .query('SELECT student_schedule.course_id, student_schedule.sec_number, sections.time, teacher_schedule.teacher_id FROM student_schedule INNER JOIN sections ON student_schedule.course_id = sections.course_id AND student_schedule.sec_number = sections.sec_number INNER JOIN teacher_schedule ON teacher_schedule.course_id = student_schedule.course_id AND student_schedule.sec_number = teacher_schedule.sec_number WHERE student_schedule.student_id = '+ req.params.id)
     .then(result => {
       for(var i =0; i < result.rows.length; i++)
       {
-        var request = {
+        var sect = {
           'id': result.rows[i].course_id,
-          'name': result.rows[i].name,
+          'secNum': result.rows[i].sec_number,
+          'time': result.rows[i].time,
+          'teacher': result.rows[i].teacher_id,
+          'name': " ",
+          'teacher_name': " ",
         }
-        console.log("Hello")
-        requests.push(request)
+        for(var j =0; j<sectionlist.length; j++)
+        {
+          if(sectionlist[j].course_id == sect.id && sectionlist[j].sec_num == sect.secNum)
+          {
+            sect.name = sectionlist[j].name
+            sect.teacher_name = sectionlist[j].teacher
+          }
+        }
+
+        sched.push(sect)
       }
-      res.render('studentSched', {'requests': requests, 'schedule': sched})
+      res.render('studentSched', {'requests': actualReq, 'schedule': sched})
 
     })
-
 })
+
 //Get teachers
 app.get('/teachers', (req, res) =>{
+  var teachers = []
   var teacherSched = []
   var t = 'Teachers'
+  client 
+    .query('SELECT teacher_id, first_name, last_name, department FROM teachers')
+    .then(result => {
+      for(var i =0; i < result.rows.length; i++)
+      {
+        var teacher = {
+          'id': result.rows[i].teacher_id,
+          'fname': result.rows[i].first_name,
+          'lname': result.rows[i].last_name,
+          'dept': result.rows[i].department,
+        }
+        teachers.push(teacher)
+      }
+      res.render('teachers', {'tea':t,'teacherSched':teacherSched, 'listOfTeachers': teachers })
+    })
   
-  res.render('teachers', {'tea':t,'teacherSched':teacherSched })
 })
+
+
+app.get('/teachers/:id', (req, res) =>{
+var teacherSched = []
+  client
+    .query('SELECT courses.name, sections.sec_number, courses.course_id, teacher_schedule.course_id, last_name, teachers.teacher_id, time FROM sections INNER JOIN courses ON courses.course_id = sections.course_id INNER JOIN teacher_schedule ON sections.sec_number = teacher_schedule.sec_number and sections.course_id = teacher_schedule.course_id INNER JOIN teachers ON teachers.teacher_id = teacher_schedule.teacher_id WHERE teachers.teacher_id= '+req.params.id)
+    .then(result => {
+      for(var i=0; i < result.rows.length; i++)
+      {
+        var name = result.rows[i].last_name
+        var teacherSection = {
+          'id': result.rows[i].course_id,
+          'name': result.rows[i].name,
+          'sec_num': result.rows[i].sec_number,
+          'time': result.rows[i].time,
+        }
+        teacherSched.push(teacherSection)
+      }
+      res.render('teacherSched', {'ts':teacherSched, 'lname': name})
+    })
+  })
+
+
+
 
 //Get teacher Schedule
 app.post('/teachers', (req, res)=> {
-  console.log("teacher post")
   var teacherSched = []
   console.log(req.body.name)
   client
@@ -198,6 +295,8 @@ app.get('/studentSched', (req, res)=> {
   console.log(req.body.stu)
   res.render('studentSched')
 })
+
+
 
 
 app.get('/scheduler', (req, res) =>{

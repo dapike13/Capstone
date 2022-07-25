@@ -10,12 +10,11 @@ var times = ["A", "B", "C", "D", "E", "F", "G"]
 var coursesToSched = []
 var studentRequests = new Map();
 var studentMap = new Map();
+var hasSaved = false;
 
 
 //Receive Section Data
 function receiveSections(){
-  console.log("WorkeD!!!!!")
-  
   fetch("/scheduler", {
     method: "POST",})
   .then(function(response) {
@@ -55,7 +54,7 @@ function receiveSections(){
 }
 
 function scheduleCourses(){
-  console.log("Schedule")
+  hasSaved = false;
   var coursesToSchedule = []
   for(var i =0; i < courseID.length; i++)
     {
@@ -68,6 +67,36 @@ function scheduleCourses(){
   }
   console.log(coursesToSchedule)
 }
+//Send current state to the server
+function save(){
+  console.log("SAVE")
+  const objSM = Object.fromEntries(studentMap)
+  fetch("/save", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({sections: sectionlist, studentSched: objSM}),
+  })
+  .catch(function(error){
+    console.log(error)
+  })
+}
+
+//Show prompt before navigating to another page to save work and push to database
+function savePrompt(btn){
+  console.log("SavePrompt")
+   var check = confirm("Do you want to save before moving to next page?");
+    if(check == true){
+      save()
+      if(btn =="students"){open("/students", "_self") }
+        if(btn =="teachers"){open("/teachers", "_self") }
+
+    }
+    else{
+      if(btn =="students") {open("/students", "_self")}
+        if(btn =="teachers") {open("/teachers", "_self")}}
+    }
 
 function scheduleCourse(s){
   console.log("Course to sched:" + s)

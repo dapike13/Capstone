@@ -9,7 +9,6 @@ html
 			include index.js
 		h1= 'Student Name'
 
-
 		h3= 'Schedule'
 		table
 			tr
@@ -19,9 +18,9 @@ html
 				th= 'Time'
 			for s in schedule
 				tr
-					td= s.course_num
-					td= s.course
-					td= s.teacher
+					td= s.id
+					td= s.name
+					td= s.teacher_name
 					td= s.time
 
 		h3= 'Requests'

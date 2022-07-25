@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+html
+	head
+		title= 'Teacher Schedule'
+		style
+			include index.css
+	body
+
+		script
+			include index.js
+		h1= lname
+
+
+		table
+			tr
+				th= 'Course_Num'
+				th= 'Course_Name'
+				th= 'Section'
+				th= 'Time'
+			for s in ts
+				tr
+					td= s.id
+					td= s.name
+					td= s.sec_num
+					td= s.time
+
+		
