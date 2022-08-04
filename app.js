@@ -23,8 +23,10 @@ var times = ["A", "B", "C", "D", "E", "F", "G"]
 
 var coursesToSched = []
 var studentRequests = new Map();
+var courseRequests = new Map();
 var studentMap = new Map();
 var x = 0;
+var start = 0
 
 const client = new Client({
   user: 'daniellebodine',
@@ -61,8 +63,13 @@ app.post('/test', (req, res) => {
   res.json({time: "A"})
 })
 
+app.get('/data', (req, res) => {
+  res.render('data')
+
+  })
+
 //Insert data from csv into sections
-app.post('/data', (req, res) => {
+app.post('/data1', (req, res) => {
   var sectionlist = []
   for(var i =0; i < req.body.data.length; i++)
   {
@@ -102,9 +109,11 @@ app.post('/', (req, res) => {
 
 //Send student and teacher data to client
 app.post("/scheduler", (req, res) => {
+  console.log("Post Scheduler")
   const objTM = Object.fromEntries(teacherMap)
   const objSM = Object.fromEntries(studentMap)
-  res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM})
+  const objRM = Object.fromEntries(courseRequests)
+  res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM, courseRequests: objRM})
 })
 
 app.post("/save", (req, res) => {
@@ -112,14 +121,16 @@ app.post("/save", (req, res) => {
     .query("DELETE FROM student_schedule")
     .catch(e => console.log(e))
   studentMap = new Map(Object.entries(req.body.studentSched))
-  sectionlist = req.body.sections
+  sectionlist = Object.entries(req.body.sections)
   //Could modify so only update ones that have been changed...
+  /*
   for(var i =0; i < sectionlist.length; i++)
   {
     client
-      .query("UPDATE sections SET time = $1 WHERE course_id = $2 and sec_number = $3", [sectionlist[i].time, sectionlist[i].course_id, sectionlist[i].sec_num])
+      .query("UPDATE sections SET time = $1, num_students = $2 WHERE course_id = $3 and sec_number = $4", [sectionlist[i].time, sectionlist[i].num_stud, sectionlist[i].course_id, sectionlist[i].sec_num])
       .catch(e => console.log(e))
   }
+  */
   studentMap.forEach((value, key) => {
     var id = key
     var sched = value.sections
@@ -132,7 +143,8 @@ app.post("/save", (req, res) => {
       }
     }
   })
-
+console.log("studentMap" +studentMap)
+  console.log("inside save" + sectionlist)
 })
 
 app.post('/edit', (req, res) => {
@@ -175,6 +187,7 @@ app.get('/students', (req, res) =>{
 app.get('/students/:id', (req, res) =>{
   console.log(req.params.id)
   var requests = studentRequests.get(parseInt(req.params.id))
+  console.log(requests)
   var actualReq = []
   for(var i =0; i < requests.length; i++)
   {
@@ -289,19 +302,13 @@ app.post('/teachers', (req, res)=> {
     .catch(e => console.log(e))
 })
 
-//Dont Need???
-app.get('/studentSched', (req, res)=> {
-  var stuSched = []
-  console.log(req.body.stu)
-  res.render('studentSched')
-})
-
 
 
 
 app.get('/scheduler', (req, res) =>{
+  sectionlist = []
   client
-    .query('SELECT sections.course_id, sections.sec_number, time, num_students, courses.name, teachers.last_name, teacher_schedule.teacher_id FROM courses INNER JOIN sections ON courses.course_id = sections.course_id INNER JOIN teacher_schedule ON teacher_schedule.course_id = sections.course_id AND teacher_schedule.sec_number = sections.sec_number INNER JOIN teachers ON teacher_schedule.teacher_id = teachers.teacher_id;')
+    .query('SELECT sections.course_id, sections.sec_number, time, grade, num_students, courses.name, teachers.last_name, teacher_schedule.teacher_id FROM courses INNER JOIN sections ON courses.course_id = sections.course_id INNER JOIN teacher_schedule ON teacher_schedule.course_id = sections.course_id AND teacher_schedule.sec_number = sections.sec_number INNER JOIN teachers ON teacher_schedule.teacher_id = teachers.teacher_id;')
     .then(result =>  {
       for(var i =0; i < result.rows.length; i++){ 
       var section = {
@@ -312,7 +319,8 @@ app.get('/scheduler', (req, res) =>{
       'teacherID': result.rows[i].teacher_id,
       'teacher': result.rows[i].last_name,
       'numStud': result.rows[i].num_students,
-      'edit': false,
+      'grade': result.rows[i].grade,
+      'edit': true,
     } 
     if(!teacherMap.has(result.rows[i].teacher_id)) {
       var teacherInfo = {
@@ -331,32 +339,44 @@ app.get('/scheduler', (req, res) =>{
     res.render('scheduler', {'sectionlist': sectionlist})
   })
     .catch(e => console.log(e))
-  client
-    .query('SELECT * from requests')
-    .then(result => {
-      var stuReq = []
-      for(var i =0; i < result.rows.length; i++){
-        if(!studentRequests.has(result.rows[i].student_id)){
-          stuReq = []
-          studentRequests.set(result.rows[i].student_id, stuReq)
-          studentRequests.get(result.rows[i].student_id).push(result.rows[i].course_id);
-        }
-        else{
-          studentRequests.get(result.rows[i].student_id).push(result.rows[i].course_id);
-        }
-      }
-      for(var i =0; i < result.rows.length; i++){
-        if(!studentMap.has(result.rows[i].student_id)){
-          var studentInfo ={
-            'requests': studentRequests.get(result.rows[i].student_id),
-            'sched': [0,0,0,0,0,0,0],
-            'sections': [],
+    if(start ==0){
+      client
+      .query('SELECT * from requests')
+      .then(result => {
+        var stuReq = []
+        var courseReq = []
+        for(var i =0; i < result.rows.length; i++){
+          if(!studentRequests.has(result.rows[i].student_id)){
+            stuReq = []
+            studentRequests.set(result.rows[i].student_id, stuReq)
+            studentRequests.get(result.rows[i].student_id).push(result.rows[i].course_id);
           }
-          studentMap.set(result.rows[i].student_id, studentInfo);
+          else{
+            studentRequests.get(result.rows[i].student_id).push(result.rows[i].course_id);
+          }
+          if(!courseRequests.has(result.rows[i].course_id)){
+            courseReq = []
+            courseRequests.set(result.rows[i].course_id, courseReq)
+            courseRequests.get(result.rows[i].course_id).push(result.rows[i].student_id);
+          }
+          else{
+            courseRequests.get(result.rows[i].course_id).push(result.rows[i].student_id);
+          }
         }
+        for(var i =0; i < result.rows.length; i++){
+          if(!studentMap.has(result.rows[i].student_id)){
+            var studentInfo ={
+              'requests': studentRequests.get(result.rows[i].student_id),
+              'sched': [0,0,0,0,0,0,0],
+              'sections': [],
+            }
+            studentMap.set(result.rows[i].student_id, studentInfo);
+          }
       }
     })
     .catch(e => console.log(e))
+  }
+    start++;
 })
 
 app.get('/', (req, res) => {

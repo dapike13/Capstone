@@ -7,38 +7,49 @@ html
 	body
 		script
 			include scheduler.js
-		<div class= "header">
-			<h1> Master Scheduling</h1>
+		<div class = "navbar" id = "middle1">
+				<button type="button" class = "button" onclick="scheduleCourses()"> Schedule Selected </button>
+				<button type="button" class = "button" onclick="unscheduleCourses()"> Unschedule Selected </button>
+				<button type="button" class = "button"> Schedule All </button>
 		</div>
-		<div class = "Stats">
-			<h3> Statistics </h3>
-			<h6> Num Students Scheduled </h6>
 
-		</div>
-		<div class="SchedButton">
-			button(type = "button" class = "button" onclick= "receiveSections()") Start Schedule
-		</div>
-		<div class = "buttons">
+		<div class= "main">
+			<div class ='header'>
+				<h1> Master Scheduling</h1>
+			</div>
+		
+		
+<div class = "parent">
+		<div class = "buttons" id = "leftside">
+			button(type = "button" class = "button" onclick= "receiveSections()") Start Schedule 
+		</br>
 			<button type="button" class = "button" onclick="savePrompt('students')"> Students </button>
 			<button type="button" class = "button" onclick="savePrompt('teachers')"> Teachers </button>
-			<button type="button" class = "button"> Schedule All </button>
-			<button type="button" class = "button" onclick="scheduleCourses()"> Schedule Selected </button>
-			<br/>
-			<button type="button" class = "button"> Data </button>
-			<button type="button" class = "button"> Filter </button>
+		</div>
+		
+		<div class = "buttons" id = "middle2">
+			<button type="button" class = "button" onclick="savePrompt('data')"> Data </button>
+			<button type="button" class = "button"> Filter </button> </br>
 			<button type="button" class = "button"> Modes </button>
 			<button type="button" class = "button" onclick="save()"> Save </button>
 		</div>
+		<div class = "Stats" id ="rightside">
+			<h3> Statistics </h3>
+			<h6> Num Students Scheduled </h6>
+		</div>
+</div>
 
+<div>
 	table
 		tr
-			th= 'Course_Id'
-			th= 'Name'
-			th= 'SectionNum'
-			th= 'TeacherID'
-			th= 'Teacher Name'
-			th= 'Time'
-			th= 'Num Students'
+			th= 'COURSE ID'
+			th= 'NAME'
+			th= 'SECTION'
+			th= 'TEACHER ID'
+			th= 'TEACHER NAME'
+			th= 'TIME'
+			th= 'NUMBER OF STUDENTS'
+			th= 'UNSCHEDULED'
 		for section in sectionlist 
 			tr
 				if section.sec_num == 1
@@ -49,12 +60,19 @@ html
 				td= section.sec_num
 				td= section.teacherID
 				td= section.teacher
-				if section.edit == true
-					td <input type = 'text', value = "#{section.time}", id = '#{section.course_id}label#{section.sec_num}', name = "section"/> <input type = 'submit', value = 'Update', id = ${section.course_id}, onclick = 'sendData("#{section.course_id}", "#{section.sec_num}")'/>
-				else
-					td <h5 id ='#{section.course_id}text#{section.sec_num}'> #{section.time} </h5> <button type = 'button' id ='#{section.course_id}edit#{section.sec_num}'  onclick='updateEdit("#{section.course_id}", "#{section.sec_num}")' hidden> Edit </button>
+				td <input type = 'text', value = "#{section.time}", id = '#{section.course_id}label#{section.sec_num}', name = "section" hidden/> <input type = 'submit', value = 'Update', id = '#{section.course_id}update#{section.sec_num}', onclick = 'update("#{section.course_id}", "#{section.sec_num}")' hidden/>
+					<h5 id ='#{section.course_id}text#{section.sec_num}'> #{section.time} </h5> <button type = 'button' id ='#{section.course_id}edit#{section.sec_num}'  onclick='edit("#{section.course_id}", "#{section.sec_num}")' hidden> Edit </button>
 				td <p id='#{section.course_id}num#{section.sec_num}'> #{section.num_students} </p>
+				td= 0
 
 
+</div>
+</div>
 
 //- td <input type= 'submit' value='Schedule' name='#{section.course_id}check' , onclick = 'scheduleCheck("#{section.course_id}")', id = '#{section.course_id}check' hidden/>
+
+
+
+
+
+

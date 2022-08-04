@@ -39,7 +39,6 @@ function myF() {
         const input = csvFile.files[0];
         const reader = new FileReader();
       reader.onload = function (e) {
-        
         const text = e.target.result;
         //document.write(text)
         const data = csvToArray(text)
