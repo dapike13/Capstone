@@ -6,6 +6,7 @@ var courseID = []
 var teacherMap = new Map();
 var studentSchedule = new Map();
 var times = ["A", "B", "C", "D", "E", "F", "G"]
+var times2 = ["A1", "A2", "B1", "B2","C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"]
 
 var coursesToSched = []
 var studentRequests = new Map();
@@ -103,8 +104,8 @@ function savePrompt(btn){
       if(btn =="students") {open("/students", "_self")}
         if(btn =="teachers") {open("/teachers", "_self")}}
           if(btn =="data"){open("/data", "_self")}
-    //var sectionListSave = JSON.stringify(sectionlist)
-    //localStorage.setItem("SecList", sectionListSave)
+    var sectionListSave = JSON.stringify(sectionlist)
+    localStorage.setItem("SecList", sectionListSave)
     }
 
 function scheduleCourse(s, t){
@@ -420,7 +421,7 @@ function update(c, s){
   }
 
 function makeHeatMap(){
-  //sectionlist = JSON.parse(localStorage.getItem("SecList"))
+  sectionlist = JSON.parse(localStorage.getItem("SecList"))
   console.log(sectionlist)
   var grade;
 
@@ -455,14 +456,11 @@ function makeHeatMap(){
   }
   for(var i =0; i < sectionlist.length; i++)
   {
-    console.log("Grade" + sectionlist[i].grade)
     if(sectionlist[i].grade == grade.toString())
     {
-      console.log("Grade worked")
       listOfSections.push(sectionlist[i]);
       if(sectionlist[i].time == "A")
       {
-        console.log("Found one")
         scheduleCounts[0][0]++
         scheduleCounts[0][2]++
       }
@@ -484,9 +482,50 @@ function makeHeatMap(){
     }
   }
   console.log(scheduleCounts)
+  addTableRows(listOfSections)
+
+}
+
+function addTableRows(sections){
+  console.log(sections)
+  var table = document.getElementById("mapSections")
+  var len = document.getElementById("mapSections").rows.length
+  console.log("Length" + len)
+  for(var j =1; j < len; j++)
+  {
+    table.deleteRow(1)
+  }
+
+  for(var i =0; i < sections.length; i++)
+  {
+    var row = table.insertRow(i+1)
+    var cell1 = row.insertCell(0)
+    cell1.innerHTML = sections[i].course_id
+
+    var cell2 = row.insertCell(1)
+    cell2.innerHTML = sections[i].name
+
+    var cell3 = row.insertCell(2)
+    cell3.innerHTML = sections[i].sec_num
+
+    var cell4 = row.insertCell(3)
+    cell4.innerHTML = sections[i].teacherID
+
+    var cell5 = row.insertCell(4)
+    cell5.innerHTML = sections[i].teacher
+
+    var cell6 = row.insertCell(5)
+    cell6.innerHTML = sections[i].time
+
+    var cell7 = row.insertCell(6)
+    cell7.innerHTML = sections[i].numStud
+
+    var cell8 = row.insertCell(7)
+    cell8.innerHTML = 0
+  }
+  
+
 
 }
 
   
-
-
