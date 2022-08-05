@@ -62,7 +62,7 @@ html
 				td= section.teacher
 				td <input type = 'text', value = "#{section.time}", id = '#{section.course_id}label#{section.sec_num}', name = "section" hidden/> <input type = 'submit', value = 'Update', id = '#{section.course_id}update#{section.sec_num}', onclick = 'update("#{section.course_id}", "#{section.sec_num}")' hidden/>
 					<h5 id ='#{section.course_id}text#{section.sec_num}'> #{section.time} </h5> <button type = 'button' id ='#{section.course_id}edit#{section.sec_num}'  onclick='edit("#{section.course_id}", "#{section.sec_num}")' hidden> Edit </button>
-				td <p id='#{section.course_id}num#{section.sec_num}'> #{section.num_students} </p>
+				td <p id='#{section.course_id}num#{section.sec_num}'> #{section.numStud} </p>
 				td= 0
 
 

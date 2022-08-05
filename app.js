@@ -120,17 +120,20 @@ app.post("/save", (req, res) => {
   client
     .query("DELETE FROM student_schedule")
     .catch(e => console.log(e))
+  //console.log("From client "+ req.body.studentSched)
+  //console.log("Section from client "+req.body.sections )
   studentMap = new Map(Object.entries(req.body.studentSched))
-  sectionlist = Object.entries(req.body.sections)
+  sectionlist = req.body.sections
   //Could modify so only update ones that have been changed...
-  /*
+  //console.log(studentMap)
+  //console.log(sectionlist)
   for(var i =0; i < sectionlist.length; i++)
   {
     client
-      .query("UPDATE sections SET time = $1, num_students = $2 WHERE course_id = $3 and sec_number = $4", [sectionlist[i].time, sectionlist[i].num_stud, sectionlist[i].course_id, sectionlist[i].sec_num])
+      .query("UPDATE sections SET time = $1, num_students = $2 WHERE course_id = $3 and sec_number = $4", [sectionlist[i].time, sectionlist[i].numStud, sectionlist[i].course_id, sectionlist[i].sec_num])
       .catch(e => console.log(e))
   }
-  */
+  
   studentMap.forEach((value, key) => {
     var id = key
     var sched = value.sections
@@ -138,13 +141,12 @@ app.post("/save", (req, res) => {
     {
       if(sched[k]!=null){
         client
-          .query("INSERT INTO student_schedule VALUES ($1, $2, $3)", [sched[k].course_num, sched[k].secNum, id])
+          .query("INSERT INTO student_schedule VALUES ($1, $2, $3)", [sched[k].course_id, sched[k].sec_num, id])
           .catch(e => console.log(e))
       }
     }
   })
-console.log("studentMap" +studentMap)
-  console.log("inside save" + sectionlist)
+  
 })
 
 app.post('/edit', (req, res) => {

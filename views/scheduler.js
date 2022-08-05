@@ -26,7 +26,6 @@ function receiveSections(){
     teacherMap = new Map(Object.entries(data.teacherMap))
     studentMap = new Map(Object.entries(data.studentMap))
     courseRequests = new Map(Object.entries(data.courseRequests))
-    console.log(courseRequests)
     for(var i =0; i < sectionlist.length; i++)
     {
       if(!courseID.includes(sectionlist[i].course_id))
@@ -72,13 +71,12 @@ function scheduleCourses(){
   {
     scheduleCourse(coursesToSchedule[i], [])
   }
-  console.log(coursesToSchedule)
 }
 //Send current state to the server
 function save(){
   console.log("SAVE")
+  console.log(studentMap)
   const objSM = Object.fromEntries(studentMap)
-  console.log(sectionlist)
   fetch("/save", {
     method: "POST",
     headers: {
@@ -86,6 +84,7 @@ function save(){
     },
     body: JSON.stringify({sections: sectionlist, studentSched: objSM}),
   })
+  //.then((response) => response.json())
   .catch(function(error){
     console.log(error)
   })
@@ -105,8 +104,8 @@ function savePrompt(btn){
       if(btn =="students") {open("/students", "_self")}
         if(btn =="teachers") {open("/teachers", "_self")}}
           if(btn =="data"){open("/data", "_self")}
-    var sectionListSave = JSON.stringify(sectionlist)
-    localStorage.setItem("SecList", sectionListSave)
+    //var sectionListSave = JSON.stringify(sectionlist)
+    //localStorage.setItem("SecList", sectionListSave)
     }
 
 function scheduleCourse(s, t){
@@ -217,13 +216,12 @@ function scheduleCourse(s, t){
         }
         stuAvailTimes[indicesOfTimes[randIndex]] = 1
         numberOfStudents[randIndex]++
-        console.log("Inside student schedule" +numberOfStudents)
         studentMap.get(studentList[0]).sched = stuAvailTimes
         studentMap.get(studentList[0]).sections[indicesOfTimes[randIndex]] = listOfSections[sectionNums[randIndex]-1]
+        console.log(studentMap.get(studentList[0]).sections[indicesOfTimes[randIndex]])
         studentList.shift()
     }
   }
-  console.log("sectionNums"+sectionNums)
   for(var q=0; q < sectionlist.length; q++)
     {
       if(sectionlist[q].course_id == s)
@@ -252,7 +250,6 @@ function unscheduleCourse(c, s){
     {
         currTime = sectionlist[i].time
         index = times.indexOf(currTime)
-        console.log(index)
         //Clear Time
         sectionlist[i].time = ''
         tID = sectionlist[i].teacherID
@@ -303,7 +300,6 @@ function scheduleCourseSection(c, s, t){
       var sec = sectionlist[i].sec_num;
       var time = sectionlist[i].time;
       indexCourseTimes[sec-1]= times.indexOf(time)
-      console.log(c+"text"+sectionlist[i].sec_num)
       document.getElementById(c+"text"+sectionlist[i].sec_num).innerHTML = time
     }
   }
@@ -380,7 +376,7 @@ function update(c, s){
 }
 
 function makeHeatMap(){
-  sectionlist = JSON.parse(localStorage.getItem("SecList"))
+  //sectionlist = JSON.parse(localStorage.getItem("SecList"))
   console.log(sectionlist)
   var grade;
 
@@ -401,7 +397,6 @@ function makeHeatMap(){
   {
     console.log("Please select a grade")
   }
-  console.log(grade)
   var scheduleCounts = []
   for(var i =0; i < 4; i++)
   {
@@ -414,7 +409,6 @@ function makeHeatMap(){
       scheduleCounts[i][j] =0;
     }
   }
-  console.log(sectionlist.length)
   for(var i =0; i < sectionlist.length; i++)
   {
     console.log("Grade" + sectionlist[i].grade)
