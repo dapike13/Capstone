@@ -365,6 +365,8 @@ function edit(c, s){
 //Unschedule teacher & students
 //Rescheudle teacher & students 
 function update(c, s){
+  console.log(c)
+  console.log(s)
   var labelTime = document.getElementById(c+"label"+s)
   var time = labelTime.value
   if(!times.includes(time)){
@@ -377,11 +379,14 @@ function update(c, s){
       {
       if(sectionlist[i].course_id == c && sectionlist[i].sec_num == s) 
         {
-          newIndex = times.indexOf(time)
-          tID = sectionlist[i].teacherID
-          availTimes = teacherMap.get(tID.toString()).sched
-          //Check if teacher is available, if not ask to Pick a new time (Need an HTML element for this)
-          if(availTimes[newIndex] == 1){
+          console.log(sectionlist[i].time)
+          console.log(time)
+          if(sectionlist[i].time != time){
+            newIndex = times.indexOf(time)
+            tID = sectionlist[i].teacherID
+            availTimes = teacherMap.get(tID.toString()).sched
+            //Check if teacher is available, if not ask to Pick a new time (Need an HTML element for this)
+            if(availTimes[newIndex] == 1){
             document.getElementById(c+"error"+s).innerHTML = "Teacher is not free"
             document.getElementById(c+"error"+s).hidden = false
           }
@@ -397,7 +402,17 @@ function update(c, s){
             scheduleCourseSection(c, s,time)
 
           }
-          break
+        }
+          else{
+            var editBtn = document.getElementById(c+"edit"+s)
+            editBtn.hidden = false
+            var textTime = document.getElementById(c+"text"+s)
+            textTime.hidden = false
+            var updateBtn = document.getElementById(c+"update"+s)
+            updateBtn.hidden = true
+            labelTime.hidden = true
+            document.getElementById(c+"error"+s).hidden = true
+          }
         }
       }
     }
