@@ -75,7 +75,6 @@ function scheduleCourses(){
 //Send current state to the server
 function save(){
   console.log("SAVE")
-  console.log(studentMap)
   const objSM = Object.fromEntries(studentMap)
   fetch("/save", {
     method: "POST",
@@ -216,12 +215,16 @@ function scheduleCourse(s, t){
         }
         stuAvailTimes[indicesOfTimes[randIndex]] = 1
         numberOfStudents[randIndex]++
+        stuSections = studentMap.get(studentList[0]).sections
+        stuSections[indicesOfTimes[randIndex]] = listOfSections[sectionNums[randIndex]-1]
+        
         studentMap.get(studentList[0]).sched = stuAvailTimes
         studentMap.get(studentList[0]).sections[indicesOfTimes[randIndex]] = listOfSections[sectionNums[randIndex]-1]
-        console.log(studentMap.get(studentList[0]).sections[indicesOfTimes[randIndex]])
+        //console.log(studentMap.get(studentList[0]).sections[indicesOfTimes[randIndex]])
         studentList.shift()
     }
   }
+  console.log(studentMap)
   for(var q=0; q < sectionlist.length; q++)
     {
       if(sectionlist[q].course_id == s)
@@ -256,6 +259,8 @@ function unscheduleCourse(c, s){
         availTimes = teacherMap.get(tID.toString()).sched
         availTimes[index] = 0
         sectionlist[i].numStud = 0
+        teacherMap.get(tID.toString()).sched = availTimes
+        
         document.getElementById(c+"num"+sectionlist[i].sec_num).innerHTML = 0
         document.getElementById(c+"text"+sectionlist[i].sec_num).innerHTML = ''
     }
@@ -269,6 +274,8 @@ function unscheduleCourse(c, s){
         availTimes = teacherMap.get(tID.toString()).sched
         availTimes[index] = 0
         sectionlist[i].numStud = 0
+        teacherMap.get(tID.toString()).sched = availTimes
+        //teacherMap.set(tID.toString()).sched = availTimes
         document.getElementById(c+"num"+sectionlist[i].sec_num).innerHTML = 0
         document.getElementById(c+"text"+sectionlist[i].sec_num).innerHTML = ''
     }
@@ -281,12 +288,14 @@ function unscheduleCourse(c, s){
     stuSched = studentMap.get(students[i].toString()).sched
     stuSections.forEach((item, index) => {
       if(item!=null){
-        if(item.course_id == s){
+        if(item.course_id == c){
           stuSched[index] = 0
           item = undefined
         }
       }
     })
+    studentMap.get(students[i].toString()).sections = stuSections
+    studentMap.get(students[i].toString()).sched = stuSched
   }
 }
 
@@ -309,16 +318,14 @@ function scheduleCourseSection(c, s, t){
   {
     if(sectionlist[i].course_id == c && sectionlist[i].sec_num == s) 
     {
-        //listOfSections[s-1]= sectionlist[i]
         newIndex = times.indexOf(t)
         //Clear Time
         sectionlist[i].time = t
         tID = sectionlist[i].teacherID
         availTimes = teacherMap.get(tID.toString()).sched
         //Check if teacher is available, if not ask to Pick a new time (Need an HTML element for this)
-        if(availTimes[newIndex] == 1){console.log("Pick a new time")}
-          else{availTimes[newIndex] = 1}
-            console.log("New time: "+ t)
+        availTimes[newIndex] = 1
+        console.log("New time: "+ t)
         document.getElementById(c+"text"+s).innerHTML = t
         break
     }
@@ -361,19 +368,41 @@ function update(c, s){
   var labelTime = document.getElementById(c+"label"+s)
   var time = labelTime.value
   if(!times.includes(time)){
-    var check = confirm("Please enter a valid time and click Update again");
+    document.getElementById(c+"error"+s).innerHTML = "Invalid Time"
+    document.getElementById(c+"error"+s).hidden = false
+    //var check = confirm("Please enter a valid time and click Update again");
   }
   else{
-    var editBtn = document.getElementById(c+"edit"+s)
-    editBtn.hidden = false
-    var textTime = document.getElementById(c+"text"+s)
-    textTime.hidden = false
-    var updateBtn = document.getElementById(c+"update"+s)
-    updateBtn.hidden = true
-    labelTime.hidden = true
-    scheduleCourseSection(c, s,time)
+    for(var i=0; i < sectionlist.length; i++)
+      {
+      if(sectionlist[i].course_id == c && sectionlist[i].sec_num == s) 
+        {
+          newIndex = times.indexOf(time)
+          tID = sectionlist[i].teacherID
+          availTimes = teacherMap.get(tID.toString()).sched
+          //Check if teacher is available, if not ask to Pick a new time (Need an HTML element for this)
+          if(availTimes[newIndex] == 1){
+            document.getElementById(c+"error"+s).innerHTML = "Teacher is not free"
+            document.getElementById(c+"error"+s).hidden = false
+          }
+          else{
+            var editBtn = document.getElementById(c+"edit"+s)
+            editBtn.hidden = false
+            var textTime = document.getElementById(c+"text"+s)
+            textTime.hidden = false
+            var updateBtn = document.getElementById(c+"update"+s)
+            updateBtn.hidden = true
+            labelTime.hidden = true
+            document.getElementById(c+"error"+s).hidden = true
+            scheduleCourseSection(c, s,time)
+
+          }
+          break
+        }
+      }
+    }
+    
   }
-}
 
 function makeHeatMap(){
   //sectionlist = JSON.parse(localStorage.getItem("SecList"))
