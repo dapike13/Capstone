@@ -12,22 +12,44 @@ html
 		</div>
 		
 		<div class = "buttons">
+			a(href="/users/login")
+				button(type ="button" class = "button") Login 
 			a(href="scheduler")
 				button(type="button" class ="button" onclick='receiveSections()') Start/Return
 			<button type="button" class = "button"> Open File </button>
+			<button type = "button" class = "button"> Setup </button>
 		</div>
-		<h4>Upload sections </h4>
-		<form id = 'myForm'>
-			<input type = "file" id = 'csvFile' accept = ".csv" />
-			<br/>
-			<input type = "submit" value = "upload" onclick = 'myF()'/>
-		</form>
-		<h4>Upload StudentSchedules</h4>
-		<form id = 'StuSched'>
-			<input type = "file" id = 'sched' accept = ".csv" />
-			<br/>
-			<input type = "submit" value = "upload" onclick = 'myS()'/>
-		</form>
+		<div class ="dropdown">
+			<p> Select type of information to input:
+				<select id="select1">
+					<option value="selectOp">Select</option>
+					<option value="sections">Sections</option>
+					<option value="students">Students</option>
+					<option value="teachers">Teachers</option>
+					<option value="data">Schedule Data</option>
+					<option value="user">User</option>
+				</select>
+				<input type = "submit" value = "choose" onclick='getSelection()'/>
+			</p>
+		</div>
+
+		<div class="sections">
+			<h4>Upload sections </h4>
+			<form id = 'myForm'>
+				<input type = "file" id = 'csvFile' accept = ".csv" />
+				<br/>
+				<input type = "submit" value = "upload" onclick = 'myF()'/>
+			</form>
+		</div>
+
+		<div class="student">
+			<h4>Upload StudentSchedules</h4>
+			<form id = 'StuSched'>
+				<input type = "file" id = 'sched' accept = ".csv" />
+				<br/>
+				<input type = "submit" value = "upload" onclick = 'myS()'/>
+			</form>
+		</div>
 		
 
 	

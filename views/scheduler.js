@@ -60,6 +60,12 @@ window.onbeforeunload = function(){
   return 'Are you sure you want to leave?';
 };
 
+function scheduleAll(){
+  for(var i =0; i < sectionlist.length; i++){
+    //scheduleCourse(sectionlist[i].course_id, [])
+  }
+}
+
 function scheduleCourses(){
   hasSaved = false;
   var coursesToSchedule = []
@@ -137,9 +143,12 @@ function scheduleCourse(s, t){
   //Make a list of students requesting the course
   studentMap.forEach((value, key) => {
         if (value.requests.includes(s)) {
+          console.log(value)
           studentList.push(key)
                   }
       })
+  console.log(studentList)
+  console.log("len"+ studentList.length)
 
   if(t.length==0){
     //Count how many students are free during a class
@@ -156,7 +165,6 @@ function scheduleCourse(s, t){
     //For each teacher teaching the course...
     for(var i = 0; i<teacherID.length;i++)
     {
-      
       var timesToNumStu = new Map()
       numberOfStudents[i]=0;
       //Get the times the teacher is currently available
@@ -201,6 +209,7 @@ function scheduleCourse(s, t){
 //Schedule Students
     while(studentList.length!=0)
     {
+      console.log("Student List While Loop")
       var randIndex = Math.floor(Math.random()*indicesOfTimes.length)
       var stuAvailTimes = studentMap.get(studentList[0]).sched
       var count =0;

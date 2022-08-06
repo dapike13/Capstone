@@ -174,3 +174,16 @@ function csvToArray(str, delimiter = ","){
   return arr
 }
 
+
+function getSelection(){
+  console.log("Yo")
+  var selection = document.getElementById('select1')
+  var s = selection.options[selection.selectedIndex].value;
+  console.log(s)
+  console.log("hello")
+}
+
+
+
+
+

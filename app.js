@@ -9,11 +9,22 @@ const {Client} = require('pg')
 const port = 3000
 
 const bodyParser = require("body-parser")
+const bcrypt = require("bcrypt")
+const session = require('express-session')
+const flash = require('express-flash')
+
 //Look this up
-app.use(bodyParser.urlencoded({extend:false}))
+app.use(express.urlencoded({extended:false}))
 app.use(bodyParser.json())
 app.set('view engine', 'pug')
 app.use(express.static('views'));
+//encrypt info in session
+app.use(session({
+  secret: "secretKey",
+  resave: false,
+  saveUninitialized: false
+}))
+app.use(flash())
 
 //Global Variables
 var sectionlist =[]
@@ -37,6 +48,57 @@ const client = new Client({
 })
 
 client.connect()
+
+app.get('/users/register', (req, res) => {
+  res.render('register', {'err': []})
+})
+
+app.get('/users/login', (req, res) => {
+  res.render('login')
+})
+
+app.post('/users/register', async(req, res) => {
+  console.log("Hello")
+  console.log(req.body)
+  let {name, email, pwd} = req.body;
+  console.log({name, email, pwd})
+
+  var errors = []
+  if (!name || !email || !pwd){
+    errors.push({message: "Please enter all fields"})
+  }
+  if(pwd.length < 6){
+    errors.push({message: "Password is too short"})
+  }
+  if(errors.length > 0){
+    res.render("register", {'err': errors})
+  }
+  else{
+    let hashedPassword = await bcrypt.hash(pwd, 10)
+    console.log(hashedPassword)
+
+    client.query("SELECT * from users WHERE email = $1", [email], (error, result) =>{
+      if(error){console.log(error)}
+        console.log(result.rows)
+      if(result.rows.length > 0){
+        errors.push({message: "Already registered"})
+        res.render("register", {'err': errors})
+      }
+      else{
+        client.query("INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, password",[name, email, hashedPassword], (error, result) =>{
+          if(error){console.log(error)}
+            console.log(result.rows)
+            req.flash('success_msg', "You are now registered. Please Login")
+            res.redirect('/users/login')
+         })
+        }
+      })
+
+  }
+})
+
+
+
 
 //Update time of section in database
 app.post('/jsondata', (req, res) => {

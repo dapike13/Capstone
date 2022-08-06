@@ -71,6 +71,12 @@ th{
   margin-top: 50px;
   padding:  16px;
 }
+.login{
+  margin:  auto;
+  width:  60%;
+  border: 5px solid #B18EB1;
+  padding:  10px;
+}
 
 body{
   background-color: #FAFFF7;
