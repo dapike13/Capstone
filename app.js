@@ -48,6 +48,8 @@ var start = 0
 var timeSlotMap = new Map();
 var scheduleGrid = new Map();
 
+var grid = []
+
 const client = new Client({
   user: 'daniellebodine',
   host: 'localhost',
@@ -110,7 +112,7 @@ app.post("/users/login", passport.authenticate('local', {
 }))
 
 app.get("/index", (req, res) =>{
-  res.render("index", {'err': [], 'gridlist': []})
+  res.render("index", {'err': [], 'gridlist': grid})
 })
 
 app.get('/users/logout', (req, res) => {
@@ -123,7 +125,7 @@ app.get('/users/logout', (req, res) => {
 
 function checkAuthenticated(req, res, next){
   if(req.isAuthenticated()){
-    return res.redirect("/index", {'err': [], 'gridlist': []})
+    return res.redirect("/index", {'err': [], 'gridlist': grid})
   }
   next();
 }
@@ -155,57 +157,76 @@ app.post('/times', (req, res) => {
       }
     }
   }
-  res.render("index", {'err': errors, 'gridlist': []})
+  res.render("index", {'err': errors, 'gridlist': grid})
   console.log(timeSlotMap)
 })
 
 app.post('/addSchedule', (req, res) => {
-  let {day1, day2, day3, day4, day5, day6} = req.body
+  grid=[]
+  let {numDay, day1, day2, day3, day4, day5, day6} = req.body
   var days = {day1, day2, day3, day4, day5, day6}
-  console.log(days)
+  var numDays = req.body.days
+  console.log(numDays)
   var maxLength = 0
   var errors = []
-  var j =1
-  for(const d in days)
-  {
-    console.log(days[d])
-    var returned = checkTimes(days[d])
-    if(returned.worked)
-    {
-      console.log(returned.list)
-      scheduleGrid.set(j, returned.list)
-      if(returned.list.length > maxLength){maxLength = returned.list.length}
-
-    }
-    else{
-      for(var i =0; i < returned.list.length;i++){
-        errors.push(returned.list[i])
-      }
-    }
-    j++
+  if(!numDays){
+    errors.push({message: "Enter the number of days"})
   }
-  console.log(errors)
-  console.log(scheduleGrid)
-  var grid = []
-  for(var j =0; j< maxLength; j++){
-    grid.push([])
-  }
-  scheduleGrid.forEach((value, key) =>{
-    for(var j=0; j < maxLength; j++){
-      console.log(value[j])
-      if(j< value.length){
-        grid[j].push(value[j])
+  else{
+    var j =1
+    for(const d in days)
+    { 
+      if(j <= numDays){
+       console.log(days[d])
+       var returned = checkTimes(days[d])
+        if(returned.worked)
+        {
+          console.log(returned.list)
+          scheduleGrid.set(j, returned.list)
+          if(returned.list.length > maxLength){maxLength = returned.list.length}
+        }
+        else{
+          for(var i =0; i < returned.list.length;i++){
+            errors.push(returned.list[i])
+          }
+        }
+        j++
       }
-      else{
-        grid[j].push(" ")
       }
+    for(var j =0; j< maxLength; j++){
+      grid.push([])
     }
+    scheduleGrid.forEach((value, key) =>{
+      for(var j=0; j < maxLength; j++){
+        console.log(value[j])
+        if(j < value.length){
+          grid[j].push(value[j])
+        }
+        else{
+          grid[j].push(null)
+        }
+      }
   })
-  console.log(grid)
+  }
   res.render("index", {'err': errors, 'gridlist': grid})
   //Display Grid 
   //Each time submit again, overwrites previous
 })
+
+function makeGrid(){
+  scheduleGrid = []
+  if(grid !=[]){
+    for(var i=0; i < grid.length; i++){
+      scheduleGrid.push([])
+      for(var j=0; j < grid[i].length; j++)
+      {
+          if(grid[i][j]!= null){scheduleGrid[i].push(0)}
+          else{scheduleGrid[i].push(2)}
+      }
+    }
+  }
+  return scheduleGrid
+}
 
 function checkTimes(inputStr){
   var errors = []
@@ -532,7 +553,7 @@ app.get('/scheduler', (req, res) =>{
     if(!teacherMap.has(result.rows[i].teacher_id)) {
       var teacherInfo = {
         'name': result.rows[i].last_name,
-        'sched': [0,0,0,0,0,0,0],
+        'sched': makeGrid(),
         'sections': [],
       }
       teacherMap.set(result.rows[i].teacher_id, teacherInfo);
@@ -574,12 +595,13 @@ app.get('/scheduler', (req, res) =>{
           if(!studentMap.has(result.rows[i].student_id)){
             var studentInfo ={
               'requests': studentRequests.get(result.rows[i].student_id),
-              'sched': [0,0,0,0,0,0,0],
+              'sched': makeGrid(),
               'sections': [],
             }
             studentMap.set(result.rows[i].student_id, studentInfo);
           }
       }
+      console.log(studentMap)
     })
     .catch(e => console.log(e))
   }
@@ -588,7 +610,7 @@ app.get('/scheduler', (req, res) =>{
 
 //checkNotAuthenticated
 app.get('/', (req, res) => {
-  res.render('index', {'err': [], 'gridlist': []})
+  res.render('index', {'err': [], 'gridlist': grid})
   })  
 
 app.listen(port, () => {
