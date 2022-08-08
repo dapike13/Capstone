@@ -75,6 +75,54 @@ html
 				each val in err
 					li= val.message
 		</div>
+
+		<div class="schedule">
+			<p>Enter details about the schedule. For each day enter the list of periods that will meet in the format: A1, B2, C3</p>
+			<form id = 'addSchedule' action ='/addSchedule' method = 'POST'>
+				<div>
+					<label for="schedEntry"> Day 1 </label>
+					<input type = "text" id = "day1" name ='day1'>
+				</div>
+				<div>
+					<label for="schedEntry"> Day 2 </label>
+					<input type = "text" id = "day2" name ='day2'>
+				</div>
+				<div>
+					<label for="schedEntry"> Day 3 </label>
+					<input type = "text" id = "day3" name ='day3'>
+				</div>
+				<div>
+					<label for="schedEntry"> Day 4 </label>
+					<input type = "text" id = "day4" name ='day4'>
+				</div>
+				<div>
+					<label for="schedEntry"> Day 5 </label>
+					<input type = "text" id = "day5" name ='day5'>
+				</div>
+				<div>
+					<label for="schedEntry"> Day 6 </label>
+					<input type = "text" id = "day6" name ='day6'>
+				</div>
+				<div>
+					<input type ="submit" value = "Add Schedule"/>
+				</div>
+
+			</form>
+		</div>
+		<div class="displayGrid">
+			table
+				tr
+					th= 'DAY1'
+					th= 'DAY2'
+					th= 'DAY3'
+					th= 'DAY4'
+					th= 'DAY5'
+					th= 'DAY6'
+				for g in gridlist
+					tr
+						for k in g 
+							td= k
+		</div>
 		
 
 	

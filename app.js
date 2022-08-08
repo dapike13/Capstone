@@ -46,6 +46,7 @@ var x = 0;
 var start = 0
 
 var timeSlotMap = new Map();
+var scheduleGrid = new Map();
 
 const client = new Client({
   user: 'daniellebodine',
@@ -109,7 +110,7 @@ app.post("/users/login", passport.authenticate('local', {
 }))
 
 app.get("/index", (req, res) =>{
-  res.render("index", {'err': []})
+  res.render("index", {'err': [], 'gridlist': []})
 })
 
 app.get('/users/logout', (req, res) => {
@@ -122,7 +123,7 @@ app.get('/users/logout', (req, res) => {
 
 function checkAuthenticated(req, res, next){
   if(req.isAuthenticated()){
-    return res.redirect("/index", {'err': []})
+    return res.redirect("/index", {'err': [], 'gridlist': []})
   }
   next();
 }
@@ -141,14 +142,78 @@ app.post('/times', (req, res) => {
   if(timeSlotMap.has(timeSlotName)){
     errors.push({message: "Name already taken"})
   }
-  const timesList = timeSlots.split(',')
-  console.log(timesList.length)
-  console.log(timesList[0])
+  else{
+    var returned = checkTimes(timeSlots)
+    
+    if(returned.worked)
+    {
+      timeSlotMap.set(timeSlotName, returned.list)
+    }
+    else{
+      for(var i =0; i < returnedList.length;i++){
+        errors.push(returnedlist[i])
+      }
+    }
+  }
+  res.render("index", {'err': errors, 'gridlist': []})
+  console.log(timeSlotMap)
+})
+
+app.post('/addSchedule', (req, res) => {
+  let {day1, day2, day3, day4, day5, day6} = req.body
+  var days = {day1, day2, day3, day4, day5, day6}
+  console.log(days)
+  var maxLength = 0
+  var errors = []
+  var j =1
+  for(const d in days)
+  {
+    console.log(days[d])
+    var returned = checkTimes(days[d])
+    if(returned.worked)
+    {
+      console.log(returned.list)
+      scheduleGrid.set(j, returned.list)
+      if(returned.list.length > maxLength){maxLength = returned.list.length}
+
+    }
+    else{
+      for(var i =0; i < returned.list.length;i++){
+        errors.push(returned.list[i])
+      }
+    }
+    j++
+  }
+  console.log(errors)
+  console.log(scheduleGrid)
+  var grid = []
+  for(var j =0; j< maxLength; j++){
+    grid.push([])
+  }
+  scheduleGrid.forEach((value, key) =>{
+    for(var j=0; j < maxLength; j++){
+      console.log(value[j])
+      if(j< value.length){
+        grid[j].push(value[j])
+      }
+      else{
+        grid[j].push(" ")
+      }
+    }
+  })
+  console.log(grid)
+  res.render("index", {'err': errors, 'gridlist': grid})
+  //Display Grid 
+  //Each time submit again, overwrites previous
+})
+
+function checkTimes(inputStr){
+  var errors = []
   var endLoop = false
-  var count =0;
+  const timesList = inputStr.split(",")
   for(var i =0; i<timesList.length && !endLoop;i++){
     timesList[i]=timesList[i].trim()
-    if(timesList[i].length % 2 == 1){
+    if(timesList[i].length % 2 ==1){
       errors.push({message: "Enter time in correct format"})
       break
     }
@@ -156,7 +221,6 @@ app.post('/times', (req, res) => {
     for(var j=0; j<timesList[i].length-1;j+=2){
       const pattern = /[a-z][0-9]/i
       var check = pattern.test(timesList[i].substring(j, j+2))
-
       if(!check){
         console.log("Incorrect: " + timesList[i].substring(j, j+2))
         errors.push({message: "Enter time in correct format"})
@@ -165,21 +229,20 @@ app.post('/times', (req, res) => {
       }
       else{
         console.log("Correct: " +timesList[i].substring(j, j+2))
-        countInString++
       }
     }
-    if(countInString == timesList[i].length/2){count++}
   }
-  if(count == timesList.length){
-    timeSlotMap.set(timeSlotName, timesList)
-  }
-  res.render("index", {'err': errors})
-  console.log(timeSlotMap)
-})
-
-
-
-
+  if(errors.length > 0){
+    return {
+      worked: false,
+      list: errors}
+    }
+    else{
+      return {
+        worked: true,
+        list: timesList}
+      }
+}
 
 //Update time of section in database
 app.post('/jsondata', (req, res) => {
@@ -525,7 +588,7 @@ app.get('/scheduler', (req, res) =>{
 
 //checkNotAuthenticated
 app.get('/', (req, res) => {
-  res.render('index', {'err': []})
+  res.render('index', {'err': [], 'gridlist': []})
   })  
 
 app.listen(port, () => {
