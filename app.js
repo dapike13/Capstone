@@ -12,6 +12,10 @@ const bodyParser = require("body-parser")
 const bcrypt = require("bcrypt")
 const session = require('express-session')
 const flash = require('express-flash')
+const passport = require('passport')
+const initializePassport = require('./passportConfig')
+
+initializePassport(passport);
 
 //Look this up
 app.use(express.urlencoded({extended:false}))
@@ -24,6 +28,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false
 }))
+app.use(passport.session())
+app.use(passport.initialize())
 app.use(flash())
 
 //Global Variables
@@ -39,6 +45,8 @@ var studentMap = new Map();
 var x = 0;
 var start = 0
 
+var timeSlotMap = new Map();
+
 const client = new Client({
   user: 'daniellebodine',
   host: 'localhost',
@@ -49,32 +57,30 @@ const client = new Client({
 
 client.connect()
 
-app.get('/users/register', (req, res) => {
+app.get('/users/register', checkAuthenticated, (req, res) => {
   res.render('register', {'err': []})
 })
 
-app.get('/users/login', (req, res) => {
+app.get('/users/login', checkAuthenticated, (req, res) => {
   res.render('login')
 })
 
 app.post('/users/register', async(req, res) => {
-  console.log("Hello")
-  console.log(req.body)
-  let {name, email, pwd} = req.body;
-  console.log({name, email, pwd})
+  let {name, email, password} = req.body;
+  console.log({name, email, password})
 
   var errors = []
-  if (!name || !email || !pwd){
+  if (!name || !email || !password){
     errors.push({message: "Please enter all fields"})
   }
-  if(pwd.length < 6){
+  if(password.length < 6){
     errors.push({message: "Password is too short"})
   }
   if(errors.length > 0){
     res.render("register", {'err': errors})
   }
   else{
-    let hashedPassword = await bcrypt.hash(pwd, 10)
+    let hashedPassword = await bcrypt.hash(password, 10)
     console.log(hashedPassword)
 
     client.query("SELECT * from users WHERE email = $1", [email], (error, result) =>{
@@ -96,6 +102,81 @@ app.post('/users/register', async(req, res) => {
 
   }
 })
+app.post("/users/login", passport.authenticate('local', {
+  successRedirect: "/index",
+  failureRedirect: "/users/login",
+  failureFlash: true
+}))
+
+app.get("/index", (req, res) =>{
+  res.render("index", {'err': []})
+})
+
+app.get('/users/logout', (req, res) => {
+  req.logOut((err) =>{
+    if(err){return next(err)} 
+  })
+  req.flash("success_msg", "You have logged out")
+  res.redirect('/users/login')
+})
+
+function checkAuthenticated(req, res, next){
+  if(req.isAuthenticated()){
+    return res.redirect("/index", {'err': []})
+  }
+  next();
+}
+
+function checkNotAuthenticated(req, res, next){
+  if(req.isAuthenticated()){
+    return next()
+  }
+  res.redirect("/users/login")
+}
+
+app.post('/times', (req, res) => {
+  let {timeSlotName, timeSlots} = req.body;
+  console.log({timeSlotName, timeSlots})
+  var errors = []
+  if(timeSlotMap.has(timeSlotName)){
+    errors.push({message: "Name already taken"})
+  }
+  const timesList = timeSlots.split(',')
+  console.log(timesList.length)
+  console.log(timesList[0])
+  var endLoop = false
+  var count =0;
+  for(var i =0; i<timesList.length && !endLoop;i++){
+    timesList[i]=timesList[i].trim()
+    if(timesList[i].length % 2 == 1){
+      errors.push({message: "Enter time in correct format"})
+      break
+    }
+    var countInString =0;
+    for(var j=0; j<timesList[i].length-1;j+=2){
+      const pattern = /[a-z][0-9]/i
+      var check = pattern.test(timesList[i].substring(j, j+2))
+
+      if(!check){
+        console.log("Incorrect: " + timesList[i].substring(j, j+2))
+        errors.push({message: "Enter time in correct format"})
+        endLoop = true
+        break
+      }
+      else{
+        console.log("Correct: " +timesList[i].substring(j, j+2))
+        countInString++
+      }
+    }
+    if(countInString == timesList[i].length/2){count++}
+  }
+  if(count == timesList.length){
+    timeSlotMap.set(timeSlotName, timesList)
+  }
+  res.render("index", {'err': errors})
+  console.log(timeSlotMap)
+})
+
 
 
 
@@ -119,7 +200,6 @@ app.post('/jsondata', (req, res) => {
     }
   })
 })
-
 
 app.post('/test', (req, res) => {
   res.json({time: "A"})
@@ -443,8 +523,9 @@ app.get('/scheduler', (req, res) =>{
     start++;
 })
 
+//checkNotAuthenticated
 app.get('/', (req, res) => {
-  res.render('index')
+  res.render('index', {'err': []})
   })  
 
 app.listen(port, () => {
