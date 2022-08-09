@@ -36,7 +36,7 @@ app.use(flash())
 var sectionlist =[]
 var teacherMap = new Map();
 var studentSchedule = new Map();
-var times = ["A", "B", "C", "D", "E", "F", "G"]
+var times = []
 
 var coursesToSched = []
 var studentRequests = new Map();
@@ -47,6 +47,8 @@ var start = 0
 
 var timeSlotMap = new Map();
 var scheduleGrid = new Map();
+
+var timeIndexMap = new Map()
 
 var grid = []
 
@@ -157,8 +159,8 @@ app.post('/times', (req, res) => {
       }
     }
   }
-  res.render("index", {'err': errors, 'gridlist': grid})
   console.log(timeSlotMap)
+  res.render("index", {'err': errors, 'gridlist': grid})
 })
 
 app.post('/addSchedule', (req, res) => {
@@ -181,7 +183,7 @@ app.post('/addSchedule', (req, res) => {
        var returned = checkTimes(days[d])
         if(returned.worked)
         {
-          console.log(returned.list)
+          times=times.concat(returned.list)
           scheduleGrid.set(j, returned.list)
           if(returned.list.length > maxLength){maxLength = returned.list.length}
         }
@@ -220,7 +222,14 @@ function makeGrid(){
       scheduleGrid.push([])
       for(var j=0; j < grid[i].length; j++)
       {
-          if(grid[i][j]!= null){scheduleGrid[i].push(0)}
+          if(grid[i][j]!= null){
+            scheduleGrid[i].push(0)
+            var coord ={
+              'x': i,
+              'y': j
+            }
+            timeIndexMap.set(grid[i][j], coord)
+          }
           else{scheduleGrid[i].push(2)}
       }
     }
@@ -339,7 +348,9 @@ app.post("/scheduler", (req, res) => {
   const objTM = Object.fromEntries(teacherMap)
   const objSM = Object.fromEntries(studentMap)
   const objRM = Object.fromEntries(courseRequests)
-  res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM, courseRequests: objRM})
+  const objTIM = Object.fromEntries(timeIndexMap)
+  const objTSM = Object.fromEntries(timeSlotMap)
+  res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM, courseRequests: objRM, timesList:times, timeIndex:objTIM, timeSlot:objTSM})
 })
 
 app.post("/save", (req, res) => {
@@ -536,7 +547,7 @@ app.post('/teachers', (req, res)=> {
 app.get('/scheduler', (req, res) =>{
   sectionlist = []
   client
-    .query('SELECT sections.course_id, sections.sec_number, time, grade, num_students, courses.name, teachers.last_name, teacher_schedule.teacher_id FROM courses INNER JOIN sections ON courses.course_id = sections.course_id INNER JOIN teacher_schedule ON teacher_schedule.course_id = sections.course_id AND teacher_schedule.sec_number = sections.sec_number INNER JOIN teachers ON teacher_schedule.teacher_id = teachers.teacher_id;')
+    .query('SELECT sections.course_id, sections.sec_number, time_slot, time, grade, num_students, courses.name, teachers.last_name, teacher_schedule.teacher_id FROM courses INNER JOIN sections ON courses.course_id = sections.course_id INNER JOIN teacher_schedule ON teacher_schedule.course_id = sections.course_id AND teacher_schedule.sec_number = sections.sec_number INNER JOIN teachers ON teacher_schedule.teacher_id = teachers.teacher_id;')
     .then(result =>  {
       for(var i =0; i < result.rows.length; i++){ 
       var section = {
@@ -548,6 +559,7 @@ app.get('/scheduler', (req, res) =>{
       'teacher': result.rows[i].last_name,
       'numStud': result.rows[i].num_students,
       'grade': result.rows[i].grade,
+      'timeSlot': result.rows[i].time_slot,
       'edit': true,
     } 
     if(!teacherMap.has(result.rows[i].teacher_id)) {
@@ -601,7 +613,6 @@ app.get('/scheduler', (req, res) =>{
             studentMap.set(result.rows[i].student_id, studentInfo);
           }
       }
-      console.log(studentMap)
     })
     .catch(e => console.log(e))
   }

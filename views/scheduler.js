@@ -5,14 +5,14 @@ var courseSections = new Map()
 var courseID = []
 var teacherMap = new Map();
 var studentSchedule = new Map();
-var times = ["A", "B", "C", "D", "E", "F", "G"]
-var times2 = ["A1", "A2", "B1", "B2","C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"]
-
+var times = []
 var coursesToSched = []
 var studentRequests = new Map();
 var courseRequests = new Map();
 var studentMap = new Map();
+var timeSlotMap = new Map();
 var hasSaved = false;
+var timeIndexMap = new Map();
 
 
 //Receive Section Data
@@ -24,9 +24,13 @@ function receiveSections(){
   })
   .then(function(data) {
     sectionlist = data.sections
+    times = data.timesList
     teacherMap = new Map(Object.entries(data.teacherMap))
     studentMap = new Map(Object.entries(data.studentMap))
     courseRequests = new Map(Object.entries(data.courseRequests))
+    timeIndexMap = new Map(Object.entries(data.timeIndex))
+    timeSlotMap = new Map(Object.entries(data.timeSlot))
+    console.log(timeSlotMap)    
     for(var i =0; i < sectionlist.length; i++)
     {
       if(!courseID.includes(sectionlist[i].course_id))
@@ -64,6 +68,17 @@ function scheduleAll(){
   for(var i =0; i < sectionlist.length; i++){
     //scheduleCourse(sectionlist[i].course_id, [])
   }
+}
+//Get the coordinates of the time in the matrix
+function getCoords(t){
+  var len = t.length
+  listCoords = []
+  for(var i=0; i < len; i+=2)
+  {
+    var coord = timeIndexMap.get(t.substring(i, i+2))
+    listCoords.push(coord)
+  }
+  return listCoords
 }
 
 function scheduleCourses(){
