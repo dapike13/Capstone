@@ -59,7 +59,7 @@ html
 					td= section.course_id
 				td= section.name 
 				td= section.sec_num
-				td= section.time_slot
+				td= section.timeSlot
 				td= section.teacherID
 				td= section.teacher
 				td <input type = 'text', value = "#{section.time}", id = '#{section.course_id}label#{section.sec_num}', name = "section" hidden/> <input type = 'submit', value = 'Update', id = '#{section.course_id}update#{section.sec_num}', onclick = 'update("#{section.course_id}", "#{section.sec_num}")' hidden/>

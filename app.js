@@ -47,8 +47,12 @@ var start = 0
 
 var timeSlotMap = new Map();
 var scheduleGrid = new Map();
+var sectionMap = new Map();
 
 var timeIndexMap = new Map()
+var testTimesIndexMap = new Map()
+
+var testTimeSlotMap = new Map();
 
 var grid = []
 
@@ -345,12 +349,15 @@ app.post('/', (req, res) => {
 //Send student and teacher data to client
 app.post("/scheduler", (req, res) => {
   console.log("Post Scheduler")
+  testIndexMap()
+  testTS()
   const objTM = Object.fromEntries(teacherMap)
   const objSM = Object.fromEntries(studentMap)
   const objRM = Object.fromEntries(courseRequests)
-  const objTIM = Object.fromEntries(timeIndexMap)
-  const objTSM = Object.fromEntries(timeSlotMap)
-  res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM, courseRequests: objRM, timesList:times, timeIndex:objTIM, timeSlot:objTSM})
+  const objTIM = Object.fromEntries(testTimesIndexMap)
+  const objTSM = Object.fromEntries(testTimeSlotMap)
+  const objSecM = Object.fromEntries(sectionMap)
+  res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM, courseRequests: objRM, timesList:times, timeIndex:objTIM, timeSlot:objTSM, sectionMap:objSecM})
 })
 
 app.post("/save", (req, res) => {
@@ -562,10 +569,16 @@ app.get('/scheduler', (req, res) =>{
       'timeSlot': result.rows[i].time_slot,
       'edit': true,
     } 
+    if(sectionMap.has(result.rows[i].course_id)){
+      sectionMap.get(result.rows[i].course_id).push(section)
+    }
+    else{
+      sectionMap.set(result.rows[i].course_id, [section])
+    }
     if(!teacherMap.has(result.rows[i].teacher_id)) {
       var teacherInfo = {
         'name': result.rows[i].last_name,
-        'sched': makeGrid(),
+        'sched': testMakeGrid(),
         'sections': [],
       }
       teacherMap.set(result.rows[i].teacher_id, teacherInfo);
@@ -574,9 +587,12 @@ app.get('/scheduler', (req, res) =>{
       var ind = times.indexOf(result.rows[i].time);
       teacherMap.get(result.rows[i].teacher_id).sched[ind]=1;
     }
-    sectionlist.push(section)
+    
     }
-    res.render('scheduler', {'sectionlist': sectionlist})
+    sectionMap.forEach((value, key) =>{
+
+      sectionlist = sectionlist.concat(value)
+    })
   })
     .catch(e => console.log(e))
     if(start ==0){
@@ -603,22 +619,125 @@ app.get('/scheduler', (req, res) =>{
             courseRequests.get(result.rows[i].course_id).push(result.rows[i].student_id);
           }
         }
+
         for(var i =0; i < result.rows.length; i++){
           if(!studentMap.has(result.rows[i].student_id)){
             var studentInfo ={
               'requests': studentRequests.get(result.rows[i].student_id),
-              'sched': makeGrid(),
+              'sched': testMakeGrid(),
               'sections': [],
             }
             studentMap.set(result.rows[i].student_id, studentInfo);
           }
       }
+      res.render('scheduler', {'sectionlist': sectionlist})
     })
     .catch(e => console.log(e))
   }
     start++;
 })
 
+function testMakeGrid(){
+  var test = [
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,0,0,0],
+    [0,2,0,2]
+    ]
+    return test
+}
+
+function testIndexMap(){
+  var coord1 ={
+              'x': 0,
+              'y': 0
+            }
+  testTimesIndexMap.set('A1', coord1)
+
+  var coord2 ={
+              'x': 1,
+              'y': 0
+            }
+  testTimesIndexMap.set('B1', coord2)
+
+  var coord3 ={
+              'x': 2,
+              'y': 0
+            }
+  testTimesIndexMap.set('C1', coord3)
+
+  var coord4 ={
+              'x': 3,
+              'y': 0
+            }
+  testTimesIndexMap.set('D1', coord4)
+
+  var coord5 ={
+              'x': 0,
+              'y': 1
+            }
+  testTimesIndexMap.set('E1', coord5)
+
+  var coord6 ={
+              'x': 1,
+              'y': 1
+            }
+  testTimesIndexMap.set('F1', coord6)
+
+  var coord7 ={
+              'x': 2,
+              'y': 1
+            }
+  testTimesIndexMap.set('G1', coord7)
+
+  var coord8 ={
+              'x': 0,
+              'y': 2
+            }
+  testTimesIndexMap.set('A2', coord8)
+
+  var coord9 ={
+              'x': 1,
+              'y': 2
+            }
+  testTimesIndexMap.set('B2', coord9)
+
+  var coord10 ={
+              'x': 2,
+              'y': 2
+            }
+  testTimesIndexMap.set('C2', coord10)
+
+  var coord11 ={
+              'x': 3,
+              'y': 2
+            }
+  testTimesIndexMap.set('D2', coord11)
+
+  var coord12 ={
+              'x': 0,
+              'y': 3
+            }
+  testTimesIndexMap.set('E2', coord12)
+
+  var coord13 ={
+              'x': 1,
+              'y': 3
+            }
+  testTimesIndexMap.set('F2', coord13)
+
+  var coord14 ={
+              'x': 2,
+              'y': 3
+            }
+  testTimesIndexMap.set('G2', coord14)
+}
+
+function testTS(){
+  testTimeSlotMap.set("four", ['A1A2', 'B1B2', 'C1C2', 'D1D2', 'E1E2', 'F1F2', 'G1G2'])
+  testTimeSlotMap.set("two",['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'D1', 'D2', 'E1', 'E2', 'F1', 'F2', 'G1' ,'G2'] )
+
+}
 //checkNotAuthenticated
 app.get('/', (req, res) => {
   res.render('index', {'err': [], 'gridlist': grid})
