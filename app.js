@@ -567,6 +567,7 @@ app.get('/scheduler', (req, res) =>{
       'numStud': result.rows[i].num_students,
       'grade': result.rows[i].grade,
       'timeSlot': result.rows[i].time_slot,
+      'students': [],
       'edit': true,
     } 
     if(sectionMap.has(result.rows[i].course_id)){
@@ -626,6 +627,7 @@ app.get('/scheduler', (req, res) =>{
               'requests': studentRequests.get(result.rows[i].student_id),
               'sched': testMakeGrid(),
               'sections': [],
+              'conflictList':[]
             }
             studentMap.set(result.rows[i].student_id, studentInfo);
           }

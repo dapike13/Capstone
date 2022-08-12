@@ -14,6 +14,7 @@ var timeSlotMap = new Map();
 var hasSaved = false;
 var timeIndexMap = new Map();
 var sectionMap = new Map()
+var conflicts = new Map()
 
 
 //Receive Section Data
@@ -147,12 +148,8 @@ function scheduleCourse(s, t){
   var listOfSections = sectionMap.get(s.toString())
   var timeSlot = listOfSections[0].timeSlot
   var listOfTimes = timeSlotMap.get(timeSlot)
-  console.log(listOfTimes)
+  var maxClassSize = Math.ceil(studentList.length/listOfSections.length)
 
-  //Set Up array to in # of students per section
-  for(var i =0; i < sectionNums.length; i++){
-    numberOfStudents[i]=0;
-  }
   for(var i=0; i < listOfSections.length;i++){
       teacherID.push(listOfSections[i].teacherID) 
       teacherNames.push(listOfSections[i].teacher)
@@ -182,7 +179,7 @@ function scheduleCourse(s, t){
     for(var i=0; i < listOfTimes.length; i++){
       var currTime = listOfTimes[i]
       var count = new Array(teacherID.length).fill(0)
-      var totalStudents =0;
+      var totalStudents = 0;
       for(var j =0; j < currTime.length-1; j+=2){
         var check = currTime.substring(j, j+2)
         var ind = timeIndexMap.get(check)
@@ -196,6 +193,7 @@ function scheduleCourse(s, t){
             totalStudents++;
             value.listTimes.push(currTime)
             }
+
             value.count=0
           }
 
@@ -224,6 +222,8 @@ function scheduleCourse(s, t){
         })
       }
     }
+    
+    console.log(studentAvail)
     //Find the Maximum Time in Possible Times
     var usedTimes = []
     for(var i =0; i< listOfSections.length; i++){
@@ -239,7 +239,6 @@ function scheduleCourse(s, t){
             console.log("Time To Sched" + possTime)
           }
           else{
-            console.log("Backup" + backup)
             backup = key
           }
         }
@@ -263,150 +262,113 @@ function scheduleCourse(s, t){
         var check = possTime.substring(j, j+2)
         var ind = timeIndexMap.get(check)
         availTimes[ind.x][ind.y] = 1}
-        console.log(availTimes)
       teacherMap.get(teacher.toString()).sched = availTimes
       teacherMap.get(teacher.toString()).sections.push(listOfSections[i])
     }
 
   } //End of T = 0
-  
+  //Schedule STUDENTS
+  var randIndex = Math.floor(Math.random()*listOfSections.length)
+  listOfInd = []
+  var conflict = true
+  studentAvail.forEach((value, key) =>{
+    for(var i =0; i < listOfSections.length; i++){
+      if(value.listTimes.includes(listOfSections[i].time) && listOfSections[i].numStud < maxClassSize){
+        var possTime = listOfSections[i].time
+        for(var j =0; j < possTime.length-1; j+=2){
+          var check = possTime.substring(j, j+2)
+          var ind = timeIndexMap.get(check)
+          value.avail[ind.x][ind.y] = 1}
+        conflict = false
+        listOfSections[i].students.push(key)
+        studentMap.get(key.toString()).sched = value.avail
+        var sec = studentMap.get(key.toString()).sections
+        sec.push(listOfSections[i])
+        studentMap.get(key.toString()).sections = sec
+        listOfSections[i].numStud++;
+        break;
+      }
+    }
+    if(conflict == true){
+      studentMap.get(key.toString()).conflictList.push(listOfSections[i])
+      if(conflicts.has(listOfSections[i].course_id)){
+        conflicts.get(listOfSections[i].course_id).push(key)
+      }
+      else{
+        conflicts.set(listOfSections[i].course_id, [key])
+      }
+      console.log(conflicts)}
+  })
   sectionlist = []
   sectionMap.forEach((value, key) =>{
       sectionlist = sectionlist.concat(value)
     })
-  //Schedule STUDENTS
-  console.log(studentAvail)
-  
-}
-
-
-
-    /*
-    
-
-    
-      indicesOfTimes.push(index)
-      //Schedules Teacher, updates Teacher Map
-      availTimes[index] = 1
-      teacherMap.get(teacherID[i].toString()).sched = availTimes
-      //Update list of sections for the teacher???
-
-      for(var q=0; q < sectionlist.length; q++)
-      {
-        if(sectionlist[q].course_id == s && sectionlist[q].sec_num == sectionNums[i])
-        {
-          sectionlist[q].time = maxTime
-          sectionlist[q].edit = false
-          //document.getElementById(s+"text"+sectionNums[i]).innerHTML = maxTime
-          }
-      }
-  }
-}
-  else{
-    indicesOfTimes = t
-  }
-//Schedule Students
-    while(studentList.length!=0)
-    {
-      console.log("Student List While Loop")
-      var randIndex = Math.floor(Math.random()*indicesOfTimes.length)
-      var stuAvailTimes = studentMap.get(studentList[0]).sched
-      var count =0;
-      for(var i=0; i < indicesOfTimes.length;i++)
-      {
-        if(stuAvailTimes[indicesOfTimes[i]]==1){count++}
-      }
-      if(count == indicesOfTimes.length) {console.log("Student has a conflict")}
-      else{
-        while(stuAvailTimes[indicesOfTimes[randIndex]] != 0)
-        {
-          randIndex = Math.floor(Math.random()*indicesOfTimes.length)
-        }
-        stuAvailTimes[indicesOfTimes[randIndex]] = 1
-        numberOfStudents[randIndex]++
-        stuSections = studentMap.get(studentList[0]).sections
-        stuSections[indicesOfTimes[randIndex]] = listOfSections[sectionNums[randIndex]-1]
-        
-        studentMap.get(studentList[0]).sched = stuAvailTimes
-        studentMap.get(studentList[0]).sections[indicesOfTimes[randIndex]] = listOfSections[sectionNums[randIndex]-1]
-        //console.log(studentMap.get(studentList[0]).sections[indicesOfTimes[randIndex]])
-        studentList.shift()
-    }
+  for(var j =0; j < listOfSections.length; j++){
+    document.getElementById(s+"num"+listOfSections[j].sec_num).innerHTML = listOfSections[j].numStud
   }
   console.log(studentMap)
-  for(var q=0; q < sectionlist.length; q++)
-    {
-      if(sectionlist[q].course_id == s)
-      {
-        for(var i =0; i < sectionNums.length; i++)
-        {
-          if(sectionlist[q].sec_num == sectionNums[i])
-          {
-            sectionlist[q].numStud = numberOfStudents[i]
-            document.getElementById(s+"num"+sectionNums[i]).innerHTML = numberOfStudents[i]
-            document.getElementById(s+"text"+sectionNums[i]).innerHTML = sectionlist[q].time
-          }
-        }
-        
-      }
-    }
-
-    */
+}
 
 //Unschedule Courses
 function unscheduleCourse(c, s){
   //Find course in the sectionlist
   //Unschedule the Teacher
-  for(var i=0; i < sectionlist.length; i++)
+  var listOfSections = sectionMap.get(c.toString())
+  for(var i=0; i < listOfSections.length; i++)
   {
-    if(sectionlist[i].course_id == c && s == 0) 
-    {
-        currTime = sectionlist[i].time
-        index = times.indexOf(currTime)
-        //Clear Time
-        sectionlist[i].time = ''
-        tID = sectionlist[i].teacherID
+    oldTime = listOfSections[i].time
+    if(s==0){
+        tID = listOfSections[i].teacherID
         availTimes = teacherMap.get(tID.toString()).sched
-        availTimes[index] = 0
-        sectionlist[i].numStud = 0
+        for(var j =0; j < oldTime.length-1; j+=2){
+          var check = oldTime.substring(j, j+2)
+          var ind = timeIndexMap.get(check)
+          availTimes[ind.x][ind.y] = 0}
+        listOfSections[i].time = ''
+        listOfSections[i].numStud =0
         teacherMap.get(tID.toString()).sched = availTimes
-        
-        document.getElementById(c+"num"+sectionlist[i].sec_num).innerHTML = 0
-        document.getElementById(c+"text"+sectionlist[i].sec_num).innerHTML = ''
-    }
-    if(sectionlist[i].course_id == c && sectionlist[i].sec_num == s) 
-    {
-        currTime = sectionlist[i].time
-        index = times.indexOf(currTime)
-        //Clear Time
-        sectionlist[i].time = ''
-        tID = sectionlist[i].teacherID
-        availTimes = teacherMap.get(tID.toString()).sched
-        availTimes[index] = 0
-        sectionlist[i].numStud = 0
-        teacherMap.get(tID.toString()).sched = availTimes
-        //teacherMap.set(tID.toString()).sched = availTimes
-        document.getElementById(c+"num"+sectionlist[i].sec_num).innerHTML = 0
-        document.getElementById(c+"text"+sectionlist[i].sec_num).innerHTML = ''
-    }
-
-  }
-  var students = courseRequests.get(c.toString())
-  for(var i =0; i < students.length;i++)
-  {
-    stuSections = studentMap.get(students[i].toString()).sections
-    stuSched = studentMap.get(students[i].toString()).sched
-    stuSections.forEach((item, index) => {
-      if(item!=null){
-        if(item.course_id == c){
-          stuSched[index] = 0
-          item = undefined
+        var sec = teacherMap.get(tID.toString()).sections
+        for(var k =0; k<sec.length; k++){
+          if(sec[k].course_id == c.toString()){
+            sec.splice(k, 1) }
         }
-      }
-    })
-    studentMap.get(students[i].toString()).sections = stuSections
-    studentMap.get(students[i].toString()).sched = stuSched
+        teacherMap.get(tID.toString()).sections = sec
+        document.getElementById(c+"num"+listOfSections[i].sec_num).innerHTML = 0
+        document.getElementById(c+"text"+listOfSections[i].sec_num).innerHTML = ''
+    }
+    if(listOfSections[i].sec_num == s) 
+    {
+        tID = listOfSections[i].teacherID
+        availTimes = teacherMap.get(tID.toString()).sched
+        for(var j =0; j < oldTime.length-1; j+=2){
+          var check = oldTime.substring(j, j+2)
+          var ind = timeIndexMap.get(check)
+          availTimes[ind.x][ind.y] = 0}
+        listOfSections[i].time = ''
+        listOfSections[i].numStud =0
+        teacherMap.get(tID.toString()).sched = availTimes
+        var sec = teacherMap.get(tID.toString()).sections
+        for(var k =0; k<sec.length; k++){
+          if(sec[k].course_id == c){
+            sec.splice(k, 1)}
+        }
+        teacherMap.get(tID.toString()).sections = sec
+        document.getElementById(c+"num"+listOfSections[i].sec_num).innerHTML = 0
+        document.getElementById(c+"text"+listOfSections[i].sec_num).innerHTML = ''   
+    }
+    var students = listOfSections[i].students
+    for(var k=0; k < students.length; k++)
+    {
+      var stuSched = studentMap.get(students[k].toString()).sched
+      for(var j =0; j < oldTime.length-1; j+=2){
+        var check = oldTime.substring(j, j+2)
+        var ind = timeIndexMap.get(check)
+        stuSched[ind.x][ind.y] = 0}
+        studentMap.get(students[k].toString()).sched = stuSched
   }
+  listOfSections[i].students = []
+    }
+    console.log(studentMap)
 }
 
 function scheduleCourseSection(c, s, t){
