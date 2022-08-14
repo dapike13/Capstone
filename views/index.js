@@ -179,8 +179,42 @@ function getItem(){
   console.log("Please work")
   var selection = document.getElementById('dataEntry')
   var s = selection.options[selection.selectedIndex].value;
+  var sec = document.getElementById('enterSections')
+  var stu = document.getElementById('enterStudents')
+  var sched = document.getElementById('enterSched')
+  var times = document.getElementById('enterTimes')
+    
+  if(s == 'sections'){
+    sec.hidden = false
+    stu.hidden = true
+    sched.hidden = true
+    times.hidden = true
+  }
+  else if(s == 'students'){
+    stu.hidden = false
+    sec.hidden = true
+    sched.hidden = true
+    times.hidden = true
+  }
+  else if(s == 'teachers'){
+    stu.hidden = true
+    sec.hidden = true
+    sched.hidden = true
+    times.hidden = true
+  }
+  else if(s == 'data'){
+    stu.hidden = true
+    sec.hidden = true
+    sched.hidden = false
+    times.hidden = false
+  }
+  else{
+    stu.hidden = true
+    sec.hidden = true
+    sched.hidden = true
+    times.hidden = true
+  }
   console.log(s)
-
 }
 
 

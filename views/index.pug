@@ -16,8 +16,6 @@ html
 				button(type ="button" class = "button") Login 
 			a(href="scheduler")
 				button(type="button" class ="button" onclick='receiveSections()') Start/Return
-			<button type="button" class = "button"> Open File </button>
-			<button type = "button" class = "button"> Setup </button>
 			a(href="/users/logout")
 				button(type ="button" class = "button") Logout
 
@@ -37,7 +35,7 @@ html
 
 
 
-		<div class="sections">
+		<div class="sections" id = 'enterSections' hidden>
 			<h4>Upload sections </h4>
 			<form id = 'myForm'>
 				<input type = "file" id = 'csvFile' accept = ".csv" />
@@ -46,7 +44,7 @@ html
 			</form>
 		</div>
 
-		<div class="student">
+		<div class="student" id = 'enterStudents' hidden>
 			<h4>Upload StudentSchedules</h4>
 			<form id = 'StuSched'>
 				<input type = "file" id = 'sched' accept = ".csv" />
@@ -55,7 +53,7 @@ html
 			</form>
 		</div>
 
-		<div class="times">
+		<div class="times" id = 'enterTimes' hidden>
 			<button type="button" class = "button"> Add New Time </button>
 			<form id ='addTimes' action ='/times' method ='POST' >
 				<div>
@@ -75,7 +73,7 @@ html
 					li= val.message
 		</div>
 
-		<div class="schedule">
+		<div class="schedule" id ='enterSched' hidden>
 			<p>Enter details about the schedule. For each day enter the list of periods that will meet in the format: A1, B2, C3</p>
 			<form id = 'addSchedule' action ='/addSchedule' method = 'POST'>
 				<div>
@@ -113,6 +111,7 @@ html
 			</form>
 		</div>
 		<div class="displayGrid">
+			<h3> Schedule Grid </h3>
 			table
 				tr
 					th= 'DAY1'
