@@ -72,6 +72,29 @@ function scheduleAll(){
   }
 }
 
+function editCourse(){
+  var coursesToEdit = []
+  for(var i =0; i < courseID.length; i++)
+    {
+      var x = document.getElementById(courseID[i]+"check")
+      if(x.checked){coursesToEdit.push(courseID[i])}
+    }
+  console.log(coursesToEdit)
+  for(var i =0; i < coursesToEdit.length; i++){
+    var course = coursesToEdit[i]
+    var sections = sectionMap.get(courseID[i].toString())
+      for(var j =0 ; j< sections.length; j++){
+        var x = document.getElementById(course+ "secNum" + sections[j].sec_num)
+        var y =document.getElementById(course+ "timeSlot" + sections[j].sec_num)
+        var z = document.getElementById(course + "tID" + sections[j].sec_num)
+        x.hidden = false
+        y.hidden = false
+        z.hidden = false
+      }
+    }
+  }
+
+
 function scheduleCourses(){
   hasSaved = false;
   var coursesToSchedule = []

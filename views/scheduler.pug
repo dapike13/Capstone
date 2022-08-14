@@ -11,6 +11,7 @@ html
 				<button type="button" class = "button" onclick="scheduleCourses()"> Schedule Selected </button>
 				<button type="button" class = "button" onclick="unscheduleCourses()"> Unschedule Selected </button>
 				<button type="button" class = "button" onclick="scheduleAll()"> Schedule All </button>
+				<button type= "button" class = "button" onclick='editCourse()'> Edit Course </button>
 		</div>
 
 		<div class= "main">
@@ -58,9 +59,12 @@ html
 				else
 					td= section.course_id
 				td= section.name 
-				td= section.sec_num
-				td= section.timeSlot
-				td= section.teacherID
+				td
+					<p> #{section.sec_num}</p> <input type = 'text', value = "#{section.sec_num}", id = '#{section.course_id}secNum#{section.sec_num}', name = "secNum" hidden/>
+				td
+					<p> #{section.timeSlot}</p> <input type = 'text', value = "#{section.timeSlot}", id = '#{section.course_id}timeSlot#{section.sec_num}', name = "timeSlot" hidden/>
+				td
+					<p> #{section.teacherID} </p> <input type = 'text', value = "#{section.teacherID}", id = '#{section.course_id}tID#{section.sec_num}', name = "tID" hidden/>
 				td= section.teacher
 				td <input type = 'text', value = "#{section.time}", id = '#{section.course_id}label#{section.sec_num}', name = "section" hidden/> <input type = 'submit', value = 'Update', id = '#{section.course_id}update#{section.sec_num}', onclick = 'update("#{section.course_id}", "#{section.sec_num}")' hidden/> <input type = 'submit', value = 'Cancel', id = '#{section.course_id}cancel#{section.sec_num}', onclick = 'cancel("#{section.course_id}", "#{section.sec_num}")' hidden/>
 					<h5 id ='#{section.course_id}text#{section.sec_num}'> #{section.time} </h5> <button type = 'button' id ='#{section.course_id}edit#{section.sec_num}'  onclick='edit("#{section.course_id}", "#{section.sec_num}")' hidden> Edit </button> <h6 id ='#{section.course_id}error#{section.sec_num}' hidden> Error </h6>
