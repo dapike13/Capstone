@@ -139,22 +139,6 @@ function sendData(c, s) {
   })
   
 }
-/**
-function teacherSched() {
-  var t = document.getElementById('tSearch').value
-  fetch("/teachers", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({teacher: t}),
-  })
-  .catch(function(error){
-    console.log(error)
-  })
-  
-}
-**/
 
 function csvToArray(str, delimiter = ","){
   console.log(str)
@@ -229,6 +213,22 @@ function getItem(){
   console.log(s)
 }
 
+function editTime(name){
+  var edit = document.getElementById(name+text)
+  edit.hidden = false
+}
+
+function deleteTime(name){
+  console.log(name)
+  fetch("/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({name: name}),
+          })
+
+}
 
 
 

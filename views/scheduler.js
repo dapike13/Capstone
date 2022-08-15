@@ -49,6 +49,8 @@ function receiveSections(){
     for(var i =0; i < courseID.length; i++)
     {
       var x = document.getElementById(courseID[i]+"check")
+      console.log(x)
+
       x.hidden= false
       var k = courseSections.get(courseID[i])
       for(var j =0; j < k.length; j++){
@@ -352,6 +354,150 @@ function update(c, s){
         }
       }
   }
+
+function filter(){
+  var grade;
+  var sec;
+  var sections = []
+  if(document.getElementById('9').checked){
+    grade = 9
+  }
+  else if(document.getElementById('10').checked){
+    grade = 10
+  }
+  else if(document.getElementById('11').checked){
+    grade = 11
+  }
+  else if(document.getElementById('12').checked){
+    grade = 12
+  }
+  else
+  {
+    console.log("Please select a grade")
+  }
+
+  if(document.getElementById('1').checked){
+    sec = 1
+  }
+  else if(document.getElementById('2').checked){
+    sec = 2
+  }
+  else if(document.getElementById('3').checked){
+    sec = 3
+  }
+  else if(document.getElementById('4').checked){
+    sec = 4
+  }
+  else if(document.getElementById('5').checked){
+    sec = 5
+  }
+  console.log(grade)
+  console.log("section" + sec)
+  if(grade!=undefined && sec!=undefined){
+    sectionMap.forEach((value, key) =>{
+      if(value.length == sec && value[0].grade == grade.toString()){
+        sections = sections.concat(value)
+      }
+    })
+  }
+  else if(grade!=undefined){
+    sectionMap.forEach((value, key) =>{
+      if(value[0].grade == grade.toString()){
+        sections = sections.concat(value)
+      }
+    })
+  }
+  else if(sec!=undefined){
+    sectionMap.forEach((value, key) =>{
+      console.log("length" + value.length)
+      console.log("sec" + sec)
+      if(value.length == sec){
+        sections = sections.concat(value)
+      }
+      if(sec == 5){
+        if(value.length > 5){
+          sections = sections.concat(value)
+        }
+      }
+    })
+  }
+  console.log(sections)
+  var table= document.getElementById('sectionTable')
+  var tr = table.getElementsByTagName("tr")
+  //var table = document.getElementById("filterSections")
+  var len = table.rows.length
+  var found = false
+  for(var i =1; i <tr.length; i++){
+    tdCourse = tr[i].getElementsByTagName("td")
+    for(var j =0; j < sections.length; j++)
+    {
+      if(sections[j].course_id == tdCourse[0].innerHTML)
+      { 
+        found = true
+        tr[i].style.display= ""
+        break
+      }
+      if(tdCourse[0].children.length > 1 && sections[j].course_id == tdCourse[0].children[1].innerHTML.trim())
+      {
+        found = true
+        tr[i].style.display= ""
+        break
+      }
+    }
+    if(found == false){
+    tr[i].style.display = "none"
+    }
+    found = false
+    }
+    
+  }
+/*
+  for(var i =0; i < sections.length; i++)
+  {
+    var row = table.insertRow(i+1)
+    var cell1 = row.insertCell(0)
+    cell1.innerHTML = sections[i].course_id
+
+    var cell2 = row.insertCell(1)
+    cell2.innerHTML = sections[i].name
+
+    var cell3 = row.insertCell(2)
+    cell3.innerHTML = sections[i].sec_num
+
+    var cell4 = row.insertCell(3)
+    cell4.innerHTML = sections[i].timeSlot
+
+    var cell5 = row.insertCell(4)
+    cell5.innerHTML = sections[i].teacherID
+
+    var cell6 = row.insertCell(5)
+    cell6.innerHTML = sections[i].teacher
+
+    var cell7 = row.insertCell(6)
+    cell7.innerHTML = sections[i].time
+
+    var cell8 = row.insertCell(7)
+    cell8.innerHTML = sections[i].numStud
+
+    var cell9 = row.insertCell(8)
+    cell9.innerHTML = 0
+  }
+
+
+
+  for(var i =0; i < sections.length; i++)
+    {
+      console.log(sections[i].course_id)
+      console.log(sections[i].sec_num)
+      var x = document.getElementById(sections[i].course_id+"check")
+      console.log(x)
+      x.hidden= false
+      var y = document.getElementById(sections[i].course_id+"edit"+sections[i].sec_num)
+      y.hidden= false
+    }
+    */
+
+  
 
 function makeHeatMap(){
   sectionlist = JSON.parse(localStorage.getItem("SecList"))

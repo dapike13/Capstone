@@ -55,6 +55,7 @@ var testTimesIndexMap = new Map()
 var testTimeSlotMap = new Map();
 
 var grid = []
+var timeSlotList = []
 
 const client = new Client({
   user: 'daniellebodine',
@@ -118,7 +119,7 @@ app.post("/users/login", passport.authenticate('local', {
 }))
 
 app.get("/index", (req, res) =>{
-  res.render("index", {'err': [], 'gridlist': grid})
+  res.render("index", {'err': [], 'gridlist': grid, 'timeSlots': timeSlotList})
 })
 
 app.get('/users/logout', (req, res) => {
@@ -131,7 +132,7 @@ app.get('/users/logout', (req, res) => {
 
 function checkAuthenticated(req, res, next){
   if(req.isAuthenticated()){
-    return res.redirect("/index", {'err': [], 'gridlist': grid})
+    return res.redirect("/index", {'err': [], 'gridlist': grid, 'timeSlots': timeSlotList})
   }
   next();
 }
@@ -144,27 +145,46 @@ function checkNotAuthenticated(req, res, next){
 }
 
 app.post('/times', (req, res) => {
-  let {timeSlotName, timeSlots} = req.body;
-  console.log({timeSlotName, timeSlots})
   var errors = []
-  if(timeSlotMap.has(timeSlotName)){
-    errors.push({message: "Name already taken"})
-  }
-  else{
-    var returned = checkTimes(timeSlots)
-    
-    if(returned.worked)
-    {
-      timeSlotMap.set(timeSlotName, returned.list)
+  let {timeSlotName, timeSlots, name} = req.body;
+  if(timeSlotName !=undefined && timeSlots!=undefined){
+    console.log({timeSlotName, timeSlots, name})
+    if(timeSlotMap.has(timeSlotName)){
+      errors.push({message: "Name already taken"})
     }
     else{
-      for(var i =0; i < returnedList.length;i++){
-        errors.push(returnedlist[i])
+      var returned = checkTimes(timeSlots)
+      if(returned.worked)
+      {
+        timeSlotMap.set(timeSlotName, returned.list)
+      }
+      else{
+        for(var i =0; i < returnedList.length;i++){
+          errors.push(returnedlist[i])
+        }
       }
     }
+    console.log(timeSlotMap)
+    timeSlotList = []
+    timeSlotMap.forEach((value, key) => {
+      var ts = {
+      'name': key,
+      'times': value
+    }
+    timeSlotList.push(ts)
+    })
   }
-  console.log(timeSlotMap)
-  res.render("index", {'err': errors, 'gridlist': grid})
+  if(name!=undefined){
+    for(var i=0; i < timeSlotList; i++){
+      if(name == timeSlotList[i].name){
+        timeSlotList.splice(i, 1)
+        break
+      }
+    }
+    timeSlotMap.delete(name)
+  }
+  console.log(timeSlotList)
+  res.render("index", {'err': errors, 'gridlist': grid, 'timeSlots': timeSlotList })
 })
 
 app.post('/addSchedule', (req, res) => {
@@ -214,7 +234,7 @@ app.post('/addSchedule', (req, res) => {
       }
   })
   }
-  res.render("index", {'err': errors, 'gridlist': grid})
+  res.render("index", {'err': errors, 'gridlist': grid, 'timeSlots': timeSlotList})
   //Display Grid 
   //Each time submit again, overwrites previous
 })
@@ -742,7 +762,7 @@ function testTS(){
 }
 //checkNotAuthenticated
 app.get('/', (req, res) => {
-  res.render('index', {'err': [], 'gridlist': grid})
+  res.render('index', {'err': [], 'gridlist': grid, 'timeSlots': timeSlotList})
   })  
 
 app.listen(port, () => {

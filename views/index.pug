@@ -54,7 +54,6 @@ html
 		</div>
 
 		<div class="times" id = 'enterTimes' hidden>
-			<button type="button" class = "button"> Add New Time </button>
 			<form id ='addTimes' action ='/times' method ='POST' >
 				<div>
 					<label for="timeEntry"> Enter Name of Timeslot: </label>
@@ -71,6 +70,20 @@ html
 			ul 
 				each val in err
 					li= val.message
+			<div>
+				table
+					tr
+						th= 'SELECT'
+						th= 'NAME'
+						th= 'TIME SLOT'
+					for t in timeSlots
+						tr
+							td <button type="button" class = "button" id ='#{t.name}edit'> Edit</button> <button type="button" class = "button" id ='#{t.name}delete' onclick="deleteTime('#{t.name}')">Delete</button>  
+							td= t.name
+							td <p> #{t.times} </p> <input type = 'text', value = "#{t.times}", id = '#{t.name}text', name = "times" hidden/>
+
+
+			</div>
 		</div>
 
 		<div class="schedule" id ='enterSched' hidden>
@@ -125,7 +138,6 @@ html
 						for k in g 
 							td= k
 		</div>
-
 		<div id ='enterUser' hidden>
 			<form id = 'addUser' action ='' method = ''>
 				<div>

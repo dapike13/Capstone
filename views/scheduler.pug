@@ -20,7 +20,7 @@ html
 			</div>
 		
 		
-<div class = "parent">
+	<div class = "parent">
 		<div class = "buttons" id = "leftside">
 			button(type = "button" class = "button" onclick= "receiveSections()") Start Schedule 
 		</br>
@@ -30,7 +30,6 @@ html
 		
 		<div class = "buttons" id = "middle2">
 			<button type="button" class = "button" onclick="savePrompt('data')"> Data </button>
-			<button type="button" class = "button"> Filter </button> </br>
 			<button type="button" class = "button"> Modes </button>
 			<button type="button" class = "button" onclick="save()"> Save </button>
 		</div>
@@ -38,10 +37,59 @@ html
 			<h3> Statistics </h3>
 			<h6> Num Students Scheduled </h6>
 		</div>
-</div>
+	</div>
 
-<div>
-	table
+	<div> 
+		<form>
+			<input type = 'radio' id = "9" name = 'grade'>
+			<label for="9"> 9th Grade </label>
+			<input type = 'radio' id = "10" name = 'grade'>
+			<label for="10"> 10th Grade </label>
+			<input type = 'radio' id = "11" name = 'grade'>
+			<label for="11"> 11th Grade </label>
+			<input type = 'radio' id = "12" name = 'grade'>
+			<label for="12"> 12th Grade </label>
+		</form>
+	</div>
+	<div>
+		<form>
+			<input type = 'radio' id = "1" name = 'sec'>
+			<label for="1"> One Section</label>
+			<input type = 'radio' id = "2" name = 'sec'>
+			<label for="2"> Two Sections</label>
+			<input type = 'radio' id = "3" name = 'sec'>
+			<label for="3"> Three Sections</label>
+			<input type = 'radio' id = "4" name = 'sec'>
+			<label for="4"> Four Sections</label>
+			<input type = 'radio' id = "5" name = 'sec'>
+			<label for="5"> Five+ Sections</label>
+		</form>
+		<button type="button" class = "button" onclick="filter()"> Filter </button> 
+		<button type="button" class = "button"> Clear </button> 
+	</div>
+
+
+	<div>
+		<table id = 'filterSections' hidden>
+			<tr>
+				<th>COURSE ID</th>
+				<th> NAME </th>
+				<th> SECTION </th>
+				<th> TIME SLOT </th>
+				<th> TEACHER ID </th>
+				<th> TEACHER NAME </th>
+				<th> TIME </th>
+				<th> NUMBER OF STUDENTS </th>
+				<th> UNSCHEDULED </th>
+			</tr>
+
+		</table>
+	</div>
+
+
+
+	<div>
+	table(id = 'sectionTable' class = sortable)
 		tr
 			th= 'COURSE ID'
 			th= 'NAME'
@@ -70,9 +118,7 @@ html
 					<h5 id ='#{section.course_id}text#{section.sec_num}'> #{section.time} </h5> <button type = 'button' id ='#{section.course_id}edit#{section.sec_num}'  onclick='edit("#{section.course_id}", "#{section.sec_num}")' hidden> Edit </button> <h6 id ='#{section.course_id}error#{section.sec_num}' hidden> Error </h6>
 				td <p id='#{section.course_id}num#{section.sec_num}'> #{section.numStud} </p>
 				td= 0
-
-
-</div>
+	</div>
 </div>
 
 //- td <input type= 'submit' value='Schedule' name='#{section.course_id}check' , onclick = 'scheduleCheck("#{section.course_id}")', id = '#{section.course_id}check' hidden/>
