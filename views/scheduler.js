@@ -264,6 +264,11 @@ function savePrompt(btn){
           if(btn =="data"){open("/data", "_self")}
     var sectionListSave = JSON.stringify(sectionlist)
     localStorage.setItem("SecList", sectionListSave)
+
+    localStorage.teacherMapSave = JSON.stringify(Array.from(teacherMap))
+
+    localStorage.timeIndexMapSave = JSON.stringify(Array.from(timeIndexMap))
+
     }
 
 function scheduleCourse(c){
@@ -590,13 +595,13 @@ function filter(){
     }
 
   }
-
-
   
-
 function makeHeatMap(){
   sectionlist = JSON.parse(localStorage.getItem("SecList"))
+  teacherMap = new Map(JSON.parse(localStorage.teacherMapSave))
+  timeIndexMap = new Map(JSON.parse(localStorage.timeIndexMapSave))
   console.log(sectionlist)
+  console.log(timeIndexMap)
   var grade;
 
   var listOfSections =[]
@@ -616,8 +621,9 @@ function makeHeatMap(){
   {
     console.log("Please select a grade")
   }
+  console.log(teacherMap)
   var scheduleCounts = teacherMap.get('101').sched
-  console.log(scheduleCounts)
+  
   for(var i =0; i < scheduleCounts.length; i++)
   {
     for(var j=0; j < scheduleCounts[0].length; j++)
@@ -625,42 +631,50 @@ function makeHeatMap(){
       scheduleCounts[i][j] = 0;
     }
   }
+  console.log(scheduleCounts)
   for(var i =0; i < sectionlist.length; i++)
   {
     if(sectionlist[i].grade == grade.toString())
     {
       listOfSections.push(sectionlist[i]);
-      if(sectionlist[i].time == "A")
-      {
-        scheduleCounts[0][0]++
-        scheduleCounts[0][2]++
-      }
     }
   }
-  for(var i=0; i < 4; i++)
+  for(var j =0; j< listOfSections.length; j++){
+    var listOfCoords = []
+    var time = listOfSections[j].time
+    for(var i =0; i < time.length-1; i+=2){
+      var check = time.substring(i, i+2)
+      var ind = timeIndexMap.get(check)
+      listOfCoords.push(ind)
+    }
+    for(var k =0; k < listOfCoords.length; k++){
+      scheduleCounts[listOfCoords[k].x][listOfCoords[k].y]++
+    }
+  }
+
+  for(var i=0; i < scheduleCounts.length; i++)
   {
-    for(var j =0; j<4; j++)
+    for(var j =0; j< scheduleCounts[0].length; j++)
     {
-      if(scheduleCounts[i][j] > 10){
+      if(scheduleCounts[i][j]/listOfSections.length > 0.7){
         document.getElementById('A1').style.backgroundColor = 'red'
       }
-      else if(scheduleCounts[i][j] > 5){
+      else if(scheduleCounts[i][j]/listOfSections.length > 0.5){
         document.getElementById('A1').style.backgroundColor = 'yellow'
       }
-      else if (scheduleCounts[i][j] > 1){
+      else{
         document.getElementById('A1').style.backgroundColor = 'green'
       }
     }
   }
   console.log(scheduleCounts)
+  console.log(listOfSections)
   addTableRows(listOfSections)
 }
 
 function addTableRows(sections){
-  console.log(sections)
   var table = document.getElementById("mapSections")
   var len = document.getElementById("mapSections").rows.length
-  console.log("Length" + len)
   for(var j =1; j < len; j++)
   {
     table.deleteRow(1)

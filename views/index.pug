@@ -71,7 +71,7 @@ html
 				each val in err
 					li= val.message
 			<div>
-				table
+				table(id = 'timeTable')
 					tr
 						th= 'SELECT'
 						th= 'NAME'
@@ -81,8 +81,6 @@ html
 							td <button type="button" class = "button" id ='#{t.name}edit'> Edit</button> <button type="button" class = "button" id ='#{t.name}delete' onclick="deleteTime('#{t.name}')">Delete</button>  
 							td= t.name
 							td <p> #{t.times} </p> <input type = 'text', value = "#{t.times}", id = '#{t.name}text', name = "times" hidden/>
-
-
 			</div>
 		</div>
 

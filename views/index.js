@@ -218,6 +218,16 @@ function editTime(name){
 }
 
 function deleteTime(name){
+  var table= document.getElementById('timeTable')
+  var tr = table.getElementsByTagName("tr")
+  
+  for(var i =1; i <tr.length; i++){
+    tdTimes = tr[i].getElementsByTagName("td")
+    if(tdTimes[1].innerText == name){
+      console.log("If")
+      tr[i].style.display= "none"
+    }
+  }
   console.log(name)
   fetch("/", {
           method: "POST",
@@ -226,7 +236,6 @@ function deleteTime(name){
           },
           body: JSON.stringify({name: name}),
           })
-
 }
 
 
