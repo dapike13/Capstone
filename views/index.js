@@ -160,7 +160,6 @@ function csvToArray(str, delimiter = ","){
 
 
 function getItem(){
-  console.log("Please work")
   var selection = document.getElementById('dataEntry')
   var s = selection.options[selection.selectedIndex].value;
   var sec = document.getElementById('enterSections')

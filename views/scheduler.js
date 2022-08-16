@@ -14,6 +14,7 @@ var hasSaved = false;
 var timeIndexMap = new Map();
 var sectionMap = new Map()
 var conflicts = new Map()
+var readyToEdit = true
 
 
 //Receive Section Data
@@ -49,7 +50,6 @@ function receiveSections(){
     for(var i =0; i < courseID.length; i++)
     {
       var x = document.getElementById(courseID[i]+"check")
-      console.log(x)
 
       x.hidden= false
       var k = courseSections.get(courseID[i])
@@ -77,25 +77,146 @@ function scheduleAll(){
 function editCourse(){
   var coursesToEdit = []
   for(var i =0; i < courseID.length; i++)
-    {
-      var x = document.getElementById(courseID[i]+"check")
-      if(x.checked){coursesToEdit.push(courseID[i])}
-    }
-  console.log(coursesToEdit)
+  {
+    var x = document.getElementById(courseID[i]+"check")
+    if(x.checked){coursesToEdit.push(courseID[i])}
+  }
   for(var i =0; i < coursesToEdit.length; i++){
     var course = coursesToEdit[i]
-    var sections = sectionMap.get(courseID[i].toString())
-      for(var j =0 ; j< sections.length; j++){
-        var x = document.getElementById(course+ "secNum" + sections[j].sec_num)
-        var y =document.getElementById(course+ "timeSlot" + sections[j].sec_num)
-        var z = document.getElementById(course + "tID" + sections[j].sec_num)
-        x.hidden = false
-        y.hidden = false
-        z.hidden = false
+
+    var sections = sectionMap.get(course.toString())
+    
+    for(var j =0 ; j< sections.length; j++){
+      var timeslot =document.getElementById(course+ "timeSlot" + sections[j].sec_num)
+      var teachers = document.getElementById(course + "tID" + sections[j].sec_num)
+      var savebtn = document.getElementById(course+ "save" + sections[j].sec_num)
+      var deletebtn = document.getElementById(course+ "delete" + sections[j].sec_num)
+      if(readyToEdit){
+        timeslot.hidden = false
+        teachers.hidden = false
+        savebtn.hidden = false
+        deletebtn.hidden = false
+        timeSlotMap.forEach((value, key) => {
+            timeslot.innerHTML += "<option value =" + key + ">" + key + "</option>"
+          })
+        teacherMap.forEach((value, key) => {
+            teachers.innerHTML += "<option value =" + key + ">" + key+ ": "+ value.name + "</option>"
+          })
       }
+      else{
+        timeslot.hidden = true
+        teachers.hidden = true
+        savebtn.hidden =  true
+        deletebtn.hidden = true
+      }
+      }
+    }
+    if(readyToEdit){
+      readyToEdit = false
+      document.getElementById('editCourseBtn').innerHTML = "Done"
+    }
+    else{
+      readyToEdit = true
+      document.getElementById('editCourseBtn').innerHTML = "Edit Course"
+    }
+
+  }
+  
+
+function deleteSection(c, s){
+  var table= document.getElementById('sectionTable')
+  var tr = table.getElementsByTagName("tr")
+  
+  for(var i =1; i <tr.length; i++){
+    tdCourse = tr[i].getElementsByTagName("td")
+
+    for(var j =0; j < tdCourse.length; j++)
+    {
+      if(c.toString() == tdCourse[0].children[0].innerHTML.trim() && tdCourse[2].innerHTML == s.toString())
+      { 
+        found = true
+        tr[i].style.display= 'none'
+        break
+      }
+      if(c.toString()== tdCourse[0].children[1].innerHTML.trim() && tdCourse[2].innerHTML == s.toString())
+      {
+        found = true
+        tr[i].style.display= 'none'
+        break
+      }
+    }
+}
+//Update sectionList
+//Update sectionNums!
+}
+function editSection(c, s){
+  var sections = sectionMap.get(c)
+  var selection = document.getElementById(c + "timeSlot" + s)
+  var selectedTime = selection.options[selection.selectedIndex].value;
+
+  selection = document.getElementById(c + "tID" + s)
+  var selectedTeacher = selection.options[selection.selectedIndex].value;
+
+  var timeText = document.getElementById(c + "timeslotp" + s)
+  var tidText = document.getElementById(c + "tidp" + s)
+
+  var currTeacher = tidText.innerHTML.trim()
+  console.log("CurrTeacher "+ currTeacher)
+
+  timeText.innerHTML = selectedTime
+  for(var i =0; i < sections.length; i++){
+    if(sections[i].sec_num ==s){
+      sections[i].timeSlot = selectedTime
     }
   }
 
+  var newTeacherID = selectedTeacher.substring(0, 3)
+  console.log("New Teacher " + newTeacherID)
+
+  var teacherName = teacherMap.get(newTeacherID).name
+
+
+  var tN = document.getElementById(c + "teacherName" + s)
+  
+  var currTime = document.getElementById(c + "text" + s).innerHTML
+  console.log(currTime)
+  console.log(currTime.length)
+  const pattern = /[a-z][0-9]/i
+
+  
+  if(pattern.test(currTime) && newTeacherID!= currTeacher){
+    var availMap = teacherMap.get(newTeacherID).sched
+    if(checkFree(availMap, currTime)){
+      scheduleTeacher(c, s, newTeacherID, currTime)
+      unscheduleTeacher(c, s, currTeacher)
+      for(var i =0; i < sections.length; i++){
+        if(sections[i].sec_num ==s){
+          sections[i].teacherID =newTeacherID
+          sections[i].teacher = teacherName
+        }
+      }
+      tidText.innerHTML = newTeacherID
+      tN.innerHTML = teacherName
+
+    }
+    else{
+      console.log("Teacher is not free")
+    }
+  }
+  else{
+    if(newTeacherID!= currTeacher){
+      for(var i =0; i < sections.length; i++){
+          if(sections[i].sec_num ==s){
+            sections[i].teacherID =newTeacherID
+            sections[i].teacher = teacherName
+          }
+        }
+      tidText.innerHTML = newTeacherID
+      tN.innerHTML = teacherName
+  }
+}
+console.log(sectionMap)
+}
 
 function scheduleCourses(){
   hasSaved = false;
@@ -193,10 +314,11 @@ function scheduleCourse(c){
           if(free){
             if(possibleTimes.has(currTime)){
                 possibleTimes.get(currTime).tList.push(key)
-                var index = listOfTimes.indexOf(currTime)
-                possibleTimes.get(currTime).numStud = listOfTotalStudents[index]
+
               }
               else{
+                var index = listOfTimes.indexOf(currTime)
+                var totalStudents = listOfTotalStudents[index]
                 var timeData ={
                   'tList':[key],
                   'numStud':totalStudents
@@ -205,7 +327,7 @@ function scheduleCourse(c){
               }
           }
         })
-    }        
+    }      
     //Find the Maximum Time in Possible Times
     var usedTimes = []
     for(var i =0; i< listOfSections.length; i++){
@@ -218,7 +340,6 @@ function scheduleCourse(c){
           if(!usedTimes.includes(key)){
             max = value.numStud
             possTime = key
-            
           }
           else{
             backup = key
@@ -228,7 +349,6 @@ function scheduleCourse(c){
       if(possTime == undefined){
         possTime = backup
       }
-     
       var ind = possibleTimes.get(possTime).tList.indexOf(teacher)
       possibleTimes.get(possTime).tList.splice(ind, 1)
       usedTimes.push(possTime)
@@ -431,13 +551,13 @@ function filter(){
     tdCourse = tr[i].getElementsByTagName("td")
     for(var j =0; j < sections.length; j++)
     {
-      if(sections[j].course_id == tdCourse[0].innerHTML)
+      if(sections[j].course_id == tdCourse[0].children[0].innerHTML.trim())
       { 
         found = true
         tr[i].style.display= ""
         break
       }
-      if(tdCourse[0].children.length > 1 && sections[j].course_id == tdCourse[0].children[1].innerHTML.trim())
+      if(sections[j].course_id == tdCourse[0].children[1].innerHTML.trim())
       {
         found = true
         tr[i].style.display= ""
@@ -451,51 +571,26 @@ function filter(){
     }
     
   }
-/*
-  for(var i =0; i < sections.length; i++)
-  {
-    var row = table.insertRow(i+1)
-    var cell1 = row.insertCell(0)
-    cell1.innerHTML = sections[i].course_id
+  function clearFilter(){
+    var table= document.getElementById('sectionTable')
+    var tr = table.getElementsByTagName("tr")
 
-    var cell2 = row.insertCell(1)
-    cell2.innerHTML = sections[i].name
+    for(var i =0; i < tr.length; i++){
+      tr[i].style.display = ""
+    }
 
-    var cell3 = row.insertCell(2)
-    cell3.innerHTML = sections[i].sec_num
+    //Clear radio buttons
+    var grade = document.getElementsByName("grade")
+    for(var i =0; i < grade.length; i++){
+      grade[i].checked = false
+    }
+    var sec = document.getElementsByName("sec")
+    for(var i =0; i < sec.length; i++){
+      sec[i].checked = false
+    }
 
-    var cell4 = row.insertCell(3)
-    cell4.innerHTML = sections[i].timeSlot
-
-    var cell5 = row.insertCell(4)
-    cell5.innerHTML = sections[i].teacherID
-
-    var cell6 = row.insertCell(5)
-    cell6.innerHTML = sections[i].teacher
-
-    var cell7 = row.insertCell(6)
-    cell7.innerHTML = sections[i].time
-
-    var cell8 = row.insertCell(7)
-    cell8.innerHTML = sections[i].numStud
-
-    var cell9 = row.insertCell(8)
-    cell9.innerHTML = 0
   }
 
-
-
-  for(var i =0; i < sections.length; i++)
-    {
-      console.log(sections[i].course_id)
-      console.log(sections[i].sec_num)
-      var x = document.getElementById(sections[i].course_id+"check")
-      console.log(x)
-      x.hidden= false
-      var y = document.getElementById(sections[i].course_id+"edit"+sections[i].sec_num)
-      y.hidden= false
-    }
-    */
 
   
 
@@ -521,16 +616,13 @@ function makeHeatMap(){
   {
     console.log("Please select a grade")
   }
-  var scheduleCounts = []
-  for(var i =0; i < 4; i++)
+  var scheduleCounts = teacherMap.get('101').sched
+  console.log(scheduleCounts)
+  for(var i =0; i < scheduleCounts.length; i++)
   {
-    scheduleCounts[i]=[]
-  }
-  for(var i =0; i < 4; i++)
-  {
-    for(var j=0; j <4; j++)
+    for(var j=0; j < scheduleCounts[0].length; j++)
     {
-      scheduleCounts[i][j] =0;
+      scheduleCounts[i][j] = 0;
     }
   }
   for(var i =0; i < sectionlist.length; i++)
@@ -636,7 +728,37 @@ function checkTime(time){
   }
   return listOfCoords
 }
+function scheduleTeacher(c, s, tID, currTime){
+  var listOfCoords = checkTime(currTime)
+  var avail = teacherMap.get(tID.toString()).sched
+  for(var j =0; j < listOfCoords.length; j++){
+    var x = listOfCoords[j].x
+    var y = listOfCoords[j].y
+    avail[x][y]=1
+  }
+  teacherMap.get(tID.toString()).sched = avail
+}
 
+function unscheduleTeacher(c, s, tID){
+  console.log(c)
+  console.log(tID)
+  var secs = sectionMap.get(c)
+  for(var i =0; i < secs.length; i++){
+    if(secs[i].sec_num ==s){
+      var currTime = secs[i].time
+    }
+  }
+
+  var listOfCoords = checkTime(currTime)
+  var avail = teacherMap.get(tID.toString()).sched
+  for(var j =0; j < listOfCoords.length; j++){
+    var x = listOfCoords[j].x
+    var y = listOfCoords[j].y
+    avail[x][y]=0
+  }
+  teacherMap.get(tID).sched = avail
+
+}
 //Remove time, numStudent, studentlist
 //Update teacher matrix
 function unscheduleSection(c, s){
@@ -794,6 +916,8 @@ function checkFree(availMap, time){
     }
   }
 }
+
+
 
 
 

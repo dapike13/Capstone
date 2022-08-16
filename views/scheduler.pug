@@ -11,7 +11,7 @@ html
 				<button type="button" class = "button" onclick="scheduleCourses()"> Schedule Selected </button>
 				<button type="button" class = "button" onclick="unscheduleCourses()"> Unschedule Selected </button>
 				<button type="button" class = "button" onclick="scheduleAll()"> Schedule All </button>
-				<button type= "button" class = "button" onclick='editCourse()'> Edit Course </button>
+				<button type= "button" class = "button" onclick='editCourse()' id = 'editCourseBtn'> Edit Course </button>
 		</div>
 
 		<div class= "main">
@@ -65,28 +65,8 @@ html
 			<label for="5"> Five+ Sections</label>
 		</form>
 		<button type="button" class = "button" onclick="filter()"> Filter </button> 
-		<button type="button" class = "button"> Clear </button> 
+		<button type="button" class = "button" onclick="clearFilter()"> Clear </button> 
 	</div>
-
-
-	<div>
-		<table id = 'filterSections' hidden>
-			<tr>
-				<th>COURSE ID</th>
-				<th> NAME </th>
-				<th> SECTION </th>
-				<th> TIME SLOT </th>
-				<th> TEACHER ID </th>
-				<th> TEACHER NAME </th>
-				<th> TIME </th>
-				<th> NUMBER OF STUDENTS </th>
-				<th> UNSCHEDULED </th>
-			</tr>
-
-		</table>
-	</div>
-
-
 
 	<div>
 	table(id = 'sectionTable' class = sortable)
@@ -103,25 +83,25 @@ html
 		for section in sectionlist 
 			tr
 				if section.sec_num == 1
-					td <input type = 'checkbox' id ='#{section.course_id}check' name = '#{section.course_id}check' hidden> <label for='#{section.course_id}check'> #{section.course_id} </label>
+					td 
+						<input type = 'checkbox' id ='#{section.course_id}check' name = '#{section.course_id}check' hidden> <label for='#{section.course_id}check'> #{section.course_id} </label> <input type ='submit' value = "Delete" id = '#{section.course_id}delete#{section.sec_num}' onclick = 'deleteSection("#{section.course_id}", "#{section.sec_num}")' hidden> <input type ='submit' value = "Save" id = '#{section.course_id}save#{section.sec_num}' onclick = 'editSection("#{section.course_id}", "#{section.sec_num}")' hidden>
 				else
-					td= section.course_id
+					td 
+						<p>#{section.course_id}</p> <input type = 'submit' value = "Delete" id = '#{section.course_id}delete#{section.sec_num}' onclick = 'deleteSection("#{section.course_id}", "#{section.sec_num}")' hidden> <input type ='submit' value = "Save" id = '#{section.course_id}save#{section.sec_num}' onclick = 'editSection("#{section.course_id}", "#{section.sec_num}")' hidden>
 				td= section.name 
+				td= section.sec_num
 				td
-					<p> #{section.sec_num}</p> <input type = 'text', value = "#{section.sec_num}", id = '#{section.course_id}secNum#{section.sec_num}', name = "secNum" hidden/>
+					<p id = '#{section.course_id}timeslotp#{section.sec_num}'> #{section.timeSlot}</p> <select name ='dropdowns' id = '#{section.course_id}timeSlot#{section.sec_num}' hidden> </select>
 				td
-					<p> #{section.timeSlot}</p> <input type = 'text', value = "#{section.timeSlot}", id = '#{section.course_id}timeSlot#{section.sec_num}', name = "timeSlot" hidden/>
+					<p id = '#{section.course_id}tidp#{section.sec_num}'> #{section.teacherID} </p> <select name ='dropdowns' id = '#{section.course_id}tID#{section.sec_num}' hidden> </select>
 				td
-					<p> #{section.teacherID} </p> <input type = 'text', value = "#{section.teacherID}", id = '#{section.course_id}tID#{section.sec_num}', name = "tID" hidden/>
-				td= section.teacher
+					<p id ='#{section.course_id}teacherName#{section.sec_num}'> #{section.teacher} </p>
 				td <input type = 'text', value = "#{section.time}", id = '#{section.course_id}label#{section.sec_num}', name = "section" hidden/> <input type = 'submit', value = 'Update', id = '#{section.course_id}update#{section.sec_num}', onclick = 'update("#{section.course_id}", "#{section.sec_num}")' hidden/> <input type = 'submit', value = 'Cancel', id = '#{section.course_id}cancel#{section.sec_num}', onclick = 'cancel("#{section.course_id}", "#{section.sec_num}")' hidden/>
 					<h5 id ='#{section.course_id}text#{section.sec_num}'> #{section.time} </h5> <button type = 'button' id ='#{section.course_id}edit#{section.sec_num}'  onclick='edit("#{section.course_id}", "#{section.sec_num}")' hidden> Edit </button> <h6 id ='#{section.course_id}error#{section.sec_num}' hidden> Error </h6>
 				td <p id='#{section.course_id}num#{section.sec_num}'> #{section.numStud} </p>
 				td= 0
 	</div>
 </div>
-
-//- td <input type= 'submit' value='Schedule' name='#{section.course_id}check' , onclick = 'scheduleCheck("#{section.course_id}")', id = '#{section.course_id}check' hidden/>
 
 
 
