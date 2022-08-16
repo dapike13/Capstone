@@ -668,10 +668,10 @@ function makeHeatMap(){
         }
       })
       console.log(time)
-      if(scheduleCounts[i][j]> 2){
+      if(scheduleCounts[i][j]/listOfSections.length > 0.7){
         document.getElementById(time.trim()).style.backgroundColor = 'red'
       }
-      else if(scheduleCounts[i][j]> 1){
+      else if(scheduleCounts[i][j]/listOfSections.length > 0.4){
         document.getElementById(time.trim()).style.backgroundColor = 'yellow'
       }
       else{
@@ -679,7 +679,6 @@ function makeHeatMap(){
       }
     }
   }
-  ///listOfSections.length 
   console.log(scheduleCounts)
   console.log(listOfSections)
   addTableRows(listOfSections)
