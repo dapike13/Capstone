@@ -614,8 +614,12 @@ app.get('/scheduler', (req, res) =>{
 
       sectionlist = sectionlist.concat(value)
     })
+    if(start > 0){
+      res.render('scheduler', {'sectionlist': sectionlist})
+    }
   })
     .catch(e => console.log(e))
+    console.log(start)
     if(start ==0){
       client
       .query('SELECT * from requests')

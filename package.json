@@ -1,7 +1,7 @@
 {
   "name": "capstone",
   "version": "1.0.0",
-  "description": "capstone",
+  "description": "TUFTS MSCS Capstone project",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -11,7 +11,7 @@
     "node": "16.x",
     "npm": "8.x"
   },
-  "author": "",
+  "author": "Danielle Pike",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -21,6 +21,7 @@
     "express-session": "^1.17.3",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
+    "pg": "^8.7.3",
     "pug": "^3.0.2"
   },
   "devDependencies": {

@@ -14,6 +14,7 @@ var studentMap = new Map();
 //Receive Section Data
 function receiveSections(){
   console.log("WorkeD!!!!!")
+  /*
   fetch("/", {
     method: "POST",})
   .then(function(response) {
@@ -27,6 +28,7 @@ function receiveSections(){
  .catch(function(error){
     console.log(error)
   })
+  */
 }
 
 //Upload section data
