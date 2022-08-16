@@ -224,7 +224,6 @@ function deleteTime(name){
   for(var i =1; i <tr.length; i++){
     tdTimes = tr[i].getElementsByTagName("td")
     if(tdTimes[1].innerText == name){
-      console.log("If")
       tr[i].style.display= "none"
     }
   }

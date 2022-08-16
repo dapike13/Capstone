@@ -323,7 +323,7 @@ app.post('/test', (req, res) => {
 })
 
 app.get('/data', (req, res) => {
-  res.render('data')
+  res.render('data', {'gridlist': grid})
 
   })
 

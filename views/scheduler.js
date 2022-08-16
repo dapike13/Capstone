@@ -652,21 +652,34 @@ function makeHeatMap(){
     }
   }
 
+  document.getElementById('A1').style.backgroundColor = 'red'
+  var time;
   for(var i=0; i < scheduleCounts.length; i++)
   {
     for(var j =0; j< scheduleCounts[0].length; j++)
     {
-      if(scheduleCounts[i][j]/listOfSections.length > 0.7){
-        document.getElementById('A1').style.backgroundColor = 'red'
+      timeIndexMap.forEach((value, key) => {
+        var x = value.x
+        var y = value.y
+        if(x == i && y == j){
+          console.log("x: "+x + "y: "+y)
+          console.log(key)
+          time = key
+        }
+      })
+      console.log(time)
+      if(scheduleCounts[i][j]> 2){
+        document.getElementById(time.trim()).style.backgroundColor = 'red'
       }
-      else if(scheduleCounts[i][j]/listOfSections.length > 0.5){
-        document.getElementById('A1').style.backgroundColor = 'yellow'
+      else if(scheduleCounts[i][j]> 1){
+        document.getElementById(time.trim()).style.backgroundColor = 'yellow'
       }
       else{
-        document.getElementById('A1').style.backgroundColor = 'green'
+        document.getElementById(time.trim()).style.backgroundColor = 'green'
       }
     }
   }
+  ///listOfSections.length 
   console.log(scheduleCounts)
   console.log(listOfSections)
   addTableRows(listOfSections)
