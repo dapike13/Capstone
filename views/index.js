@@ -160,6 +160,20 @@ function uploadCourseData() {
    })
 }
 
+function getTimeSlots(){
+  console.log("In function")
+  const myForm = document.getElementById('addTimes');
+  const numPer = document.getElementById('numPer').value
+  const times = document.getElementById('times').value
+    fetch("/times", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({timeSlotName: numPer, timeSlots:times})
+  })
+}
+
 
 
 
@@ -249,6 +263,7 @@ function getItem(){
   var user = document.getElementById('enterUser')
   var courses = document.getElementById('enterCourses')
   var teachers = document.getElementById('enterTeachers')
+  var grid = document.getElementById('displayGrid')
     
   if(s == 'sections'){
     sec.hidden = false
@@ -258,6 +273,7 @@ function getItem(){
     user.hidden = true
     courses.hidden = true
     teachers.hidden = true
+    grid.hidden = true
   }
   else if(s == 'students'){
     stu.hidden = false
@@ -267,6 +283,7 @@ function getItem(){
     user.hidden = true
     courses.hidden = true
     teachers.hidden = true
+    grid.hidden = true
   }
   else if(s == 'teachers'){
     stu.hidden = true
@@ -276,6 +293,7 @@ function getItem(){
     user.hidden = true
     courses.hidden = true
     teachers.hidden = false
+    grid.hidden = true
   }
   else if(s == 'data'){
     stu.hidden = true
@@ -285,6 +303,7 @@ function getItem(){
     user.hidden = true
     courses.hidden = true
     teachers.hidden = true
+    grid.hidden = false
   }
   else if(s =='user'){
     stu.hidden = true
@@ -294,6 +313,7 @@ function getItem(){
     user.hidden = false
     courses.hidden = true
     teachers.hidden = true
+    grid.hidden = true
   }
   else if(s == "courses"){
     stu.hidden = true
@@ -303,6 +323,7 @@ function getItem(){
     user.hidden = true
     courses.hidden = false
     teachers.hidden = true
+    grid.hidden = true
   }
   else{
     stu.hidden = true

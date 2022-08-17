@@ -59,6 +59,7 @@ var timeSlotList = []
 
 var studentSchedInfo = []
 
+/*
 const client = new Client({
   user: 'daniellebodine',
   host: 'localhost',
@@ -66,14 +67,15 @@ const client = new Client({
   password: 'secretpassword',
   port: 5432,
 })
-/*
+*/
+
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 });
-*/
+
 
 client.connect()
 
@@ -155,6 +157,7 @@ function checkNotAuthenticated(req, res, next){
 }
 
 app.post('/times', (req, res) => {
+  console.log("In the post")
   var errors = []
   let {timeSlotName, timeSlots, name} = req.body;
   if(timeSlotName !=undefined && timeSlots!=undefined){
@@ -193,6 +196,7 @@ app.post('/times', (req, res) => {
     }
     timeSlotMap.delete(name)
   }
+  console.log("timeslotList")
   console.log(timeSlotList)
   res.render("index", {'err': errors, 'gridlist': grid, 'timeSlots': timeSlotList })
 })
