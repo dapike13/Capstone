@@ -56,7 +56,7 @@ function uploadSectionData() {
 }
 
 //Upload student schedule data
-function uploadStudentData() {
+function uploadStudentSchedData() {
       const myForm = document.getElementById('StuSched');
       const csvFile = document.getElementById('sched');
 
@@ -79,6 +79,61 @@ function uploadStudentData() {
      reader.readAsText(input);
    })
 }
+
+//Upload Student Info
+function uploadStudentInfoData() {
+      const myForm = document.getElementById('StuInfo');
+      const csvFile = document.getElementById('stuInfo');
+
+      myForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const input = csvFile.files[0];
+        const reader = new FileReader();
+      reader.onload = function (e) {
+        const text = e.target.result;
+        const data = csvToArray(text)
+        //document.write(JSON.stringify(data));
+        fetch("/stuInfo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({data: data}),
+          })
+     }
+     reader.readAsText(input);
+   })
+}
+
+//Upload Student Info
+function uploadTeacherData() {
+      const myForm = document.getElementById('teachers');
+      const csvFile = document.getElementById('teacherInput');
+
+      myForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const input = csvFile.files[0];
+        const reader = new FileReader();
+      reader.onload = function (e) {
+        const text = e.target.result;
+        const data = csvToArray(text)
+        //document.write(JSON.stringify(data));
+        fetch("/teacherInfo", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({data: data}),
+          })
+     }
+     reader.readAsText(input);
+   })
+}
+
+
+
+
+
 
 //Upload student schedule data
 function uploadCourseData() {
@@ -193,6 +248,7 @@ function getItem(){
   var times = document.getElementById('enterTimes')
   var user = document.getElementById('enterUser')
   var courses = document.getElementById('enterCourses')
+  var teachers = document.getElementById('enterTeachers')
     
   if(s == 'sections'){
     sec.hidden = false
@@ -201,6 +257,7 @@ function getItem(){
     times.hidden = true
     user.hidden = true
     courses.hidden = true
+    teachers.hidden = true
   }
   else if(s == 'students'){
     stu.hidden = false
@@ -209,6 +266,7 @@ function getItem(){
     times.hidden = true
     user.hidden = true
     courses.hidden = true
+    teachers.hidden = true
   }
   else if(s == 'teachers'){
     stu.hidden = true
@@ -217,6 +275,7 @@ function getItem(){
     times.hidden = true
     user.hidden = true
     courses.hidden = true
+    teachers.hidden = false
   }
   else if(s == 'data'){
     stu.hidden = true
@@ -225,6 +284,7 @@ function getItem(){
     times.hidden = false
     user.hidden = true
     courses.hidden = true
+    teachers.hidden = true
   }
   else if(s =='user'){
     stu.hidden = true
@@ -233,6 +293,7 @@ function getItem(){
     times.hidden = true
     user.hidden = false
     courses.hidden = true
+    teachers.hidden = true
   }
   else if(s == "courses"){
     stu.hidden = true
@@ -241,6 +302,7 @@ function getItem(){
     times.hidden = true
     user.hidden = true
     courses.hidden = false
+    teachers.hidden = true
   }
   else{
     stu.hidden = true
@@ -248,6 +310,7 @@ function getItem(){
     sched.hidden = true
     times.hidden = true
     courses.hidden = true
+    teachers.hidden = true
   }
   console.log(s)
 }

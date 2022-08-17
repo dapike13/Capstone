@@ -350,13 +350,31 @@ app.post('/courses', (req, res) => {
   }
 })
 
+app.post('/stuInfo', (req, res) => {
+  for(var i=0; i < req.body.data.length; i++){
+    client
+      .query('INSERT INTO students VALUES($1, $2, $3, $4)', 
+        [req.body.data[i].student_id, req.body.data[i].first_name, req.body.data[i].last_name, req.body.data[i].grade])
+      .catch(e => console.log(e))
+  }
+})
+
+app.post('/teacherInfo', (req, res) => {
+  for(var i=0; i < req.body.data.length; i++){
+    client
+      .query('INSERT INTO teachers VALUES($1, $2, $3, $4)', 
+        [req.body.data[i].teacher_id, req.body.data[i].first_name, req.body.data[i].last_name, req.body.data[i].department.trim()])
+      .catch(e => console.log(e))
+  }
+})
+
 //Insert data from csv into sections
 app.post('/sectionData', (req, res) => {
   var sectionlist = []
   for(var i =0; i < req.body.data.length; i++)
   {
-    client.query("INSERT INTO sections VALUES ($1, $2, $3, $4)", 
-      [req.body.data[i].course_id,req.body.data[i].sec_number,req.body.data[i].time, 0 ])
+    client.query("INSERT INTO sections VALUES ($1, $2, $3, $4, $5)", 
+      [req.body.data[i].course_id,req.body.data[i].sec_number,req.body.data[i].time, 0,req.body.data[i].time_slot.trim()])
   }
   for(var i =0; i < req.body.data.length; i++)
   {

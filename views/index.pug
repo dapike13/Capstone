@@ -26,18 +26,16 @@ html
 				<select name = "dataEntry" id="dataEntry" onchange = 'getItem()'>
 					<option value="selectOp">Select</option>
 					<option value="courses">1. Courses</option>
-					<option value="sections">2. Sections</option>
-					<option value="students">3. Students</option>
-					<option value="teachers">4. Teachers</option>
+					<option value="teachers">2. Teachers</option>
+					<option value="sections">3. Sections</option>
+					<option value="students">4. Students</option>
 					<option value="data">5. Schedule Data</option>
 					<option value="user">User</option>
 				</select>
 		</div>
 
-
-
 		<div class="sections" id = 'enterSections' hidden>
-			<h4>Upload sections </h4>
+			<h4>Upload Sections </h4>
 			<form id = 'myForm'>
 				<input type = "file" id = 'csvFile' accept = ".csv" />
 				<br/>
@@ -46,11 +44,18 @@ html
 		</div>
 
 		<div class="student" id = 'enterStudents' hidden>
-			<h4>Upload StudentSchedules</h4>
+			<h4>Upload Student Information</h4>
+			<form id = 'StuInfo'>
+				<input type = "file" id = 'stuInfo' accept = ".csv" />
+				<br/>
+				<input type = "submit" value = "upload" onclick = 'uploadStudentInfoData()'/>
+			</form>
+
+			<h4>Upload Student Schedules</h4>
 			<form id = 'StuSched'>
 				<input type = "file" id = 'sched' accept = ".csv" />
 				<br/>
-				<input type = "submit" value = "upload" onclick = 'uploadStudentData()'/>
+				<input type = "submit" value = "upload" onclick = 'uploadStudentSchedData()'/>
 			</form>
 		</div>
 
@@ -60,6 +65,15 @@ html
 				<input type = "file" id = 'courseInput' accept = ".csv" />
 				<br/>
 				<input type = "submit" value = "upload" onclick = 'uploadCourseData()'/>
+			</form>
+		</div>
+
+		<div class="teachers" id = 'enterTeachers' hidden>
+			<h4>Upload Teacher Information</h4>
+			<form id = 'teachers'>
+				<input type = "file" id = 'teacherInput' accept = ".csv" />
+				<br/>
+				<input type = "submit" value = "upload" onclick = 'uploadTeacherData()'/>
 			</form>
 		</div>
 
