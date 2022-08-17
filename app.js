@@ -57,6 +57,8 @@ var testTimeSlotMap = new Map();
 var grid = []
 var timeSlotList = []
 
+var studentSchedInfo = []
+
 const client = new Client({
   user: 'daniellebodine',
   host: 'localhost',
@@ -363,6 +365,7 @@ app.post('/sched', (req, res) => {
 
 //Receive Data on courses to schedule
 app.post('/', (req, res) => {
+
   console.log("POST worked!!!")
 })
 
@@ -371,46 +374,45 @@ app.post("/scheduler", (req, res) => {
   console.log("Post Scheduler")
   testIndexMap()
   testTS()
+  for(var j =0; j<studentSchedInfo.length; j++){
+        for(var i =0; i < sectionlist.length; i++){
+          if(sectionlist[i].course_id ==studentSchedInfo[j].courseID && sectionlist[i].sec_num==studentSchedInfo[j].secNum){
+            sectionlist[i].students.push(studentSchedInfo[j].studentID)
+          }
+      }
+      } 
   const objTM = Object.fromEntries(teacherMap)
   const objSM = Object.fromEntries(studentMap)
   const objRM = Object.fromEntries(courseRequests)
   const objTIM = Object.fromEntries(testTimesIndexMap)
   const objTSM = Object.fromEntries(testTimeSlotMap)
   const objSecM = Object.fromEntries(sectionMap)
-  res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM, courseRequests: objRM, timesList:times, timeIndex:objTIM, timeSlot:objTSM, sectionMap:objSecM})
+  res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM, courseRequests: objRM, timesList:times, timeIndex:objTIM, timeSlot:objTSM, sectionMap:objSecM, studentSched: studentSchedInfo})
 })
 
 app.post("/save", (req, res) => {
   client
     .query("DELETE FROM student_schedule")
     .catch(e => console.log(e))
-  //console.log("From client "+ req.body.studentSched)
-  //console.log("Section from client "+req.body.sections )
-  studentMap = new Map(Object.entries(req.body.studentSched))
+  //studentMap = new Map(Object.entries(req.body.studentSched))
   sectionlist = req.body.sections
   //Could modify so only update ones that have been changed...
-  //console.log(studentMap)
-  //console.log(sectionlist)
   for(var i =0; i < sectionlist.length; i++)
   {
     client
       .query("UPDATE sections SET time = $1, num_students = $2 WHERE course_id = $3 and sec_number = $4", [sectionlist[i].time, sectionlist[i].numStud, sectionlist[i].course_id, sectionlist[i].sec_num])
       .catch(e => console.log(e))
   }
-  
-  studentMap.forEach((value, key) => {
-    var id = key
-    var sched = value.sections
-    for(var k =0; k < sched.length; k++)
-    {
-      if(sched[k]!=null){
-        client
-          .query("INSERT INTO student_schedule VALUES ($1, $2, $3)", [sched[k].course_id, sched[k].sec_num, id])
+  for(var j=0; j < sectionlist.length; j++){
+    var course = sectionlist[j].course_id
+    var sec = sectionlist[j].sec_num
+    var students = sectionlist[j].students
+    for(var k =0; k < students.length; k++){
+      client
+          .query("INSERT INTO student_schedule VALUES ($1, $2, $3)", [course, sec, parseInt(students[k])])
           .catch(e => console.log(e))
-      }
     }
-  })
-  
+  }
 })
 
 app.post('/edit', (req, res) => {
@@ -569,13 +571,13 @@ app.post('/teachers', (req, res)=> {
 })
 
 
-
-
 app.get('/scheduler', (req, res) =>{
   sectionlist = []
+  sectionMap = new Map()
   client
     .query('SELECT sections.course_id, sections.sec_number, time_slot, time, grade, num_students, courses.name, teachers.last_name, teacher_schedule.teacher_id FROM courses INNER JOIN sections ON courses.course_id = sections.course_id INNER JOIN teacher_schedule ON teacher_schedule.course_id = sections.course_id AND teacher_schedule.sec_number = sections.sec_number INNER JOIN teachers ON teacher_schedule.teacher_id = teachers.teacher_id;')
     .then(result =>  {
+      sectionlist = []
       for(var i =0; i < result.rows.length; i++){ 
       var section = {
       'course_id': result.rows[i].course_id,
@@ -604,23 +606,32 @@ app.get('/scheduler', (req, res) =>{
       }
       teacherMap.set(result.rows[i].teacher_id, teacherInfo);
     }
-    if(times.includes(result.rows[i].time)) {
-      var ind = times.indexOf(result.rows[i].time);
-      teacherMap.get(result.rows[i].teacher_id).sched[ind]=1;
-    }
-    
     }
     sectionMap.forEach((value, key) =>{
-
       sectionlist = sectionlist.concat(value)
     })
-    if(start > 0){
       res.render('scheduler', {'sectionlist': sectionlist})
-    }
   })
     .catch(e => console.log(e))
-    console.log(start)
+    client
+      .query('SELECT course_id, sec_number, student_id FROM student_schedule')
+      .then(result =>{
+        for(var i =0; i < result.rows.length;i++){
+          var details ={
+            'courseID': result.rows[i].course_id,
+            'secNum':result.rows[i].sec_number,
+            'studentID':result.rows[i].student_id
+          }
+          studentSchedInfo.push(details)
+        }
+      })
+      .catch(e => console.log(e))
+
+           
+      console.log("sectionlist")
+      console.log(sectionlist)
     if(start ==0){
+      start++;
       client
       .query('SELECT * from requests')
       .then(result => {
@@ -656,11 +667,9 @@ app.get('/scheduler', (req, res) =>{
             studentMap.set(result.rows[i].student_id, studentInfo);
           }
       }
-      res.render('scheduler', {'sectionlist': sectionlist})
     })
     .catch(e => console.log(e))
   }
-    start++;
 })
 
 function testMakeGrid(){

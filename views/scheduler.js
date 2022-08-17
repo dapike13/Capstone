@@ -15,6 +15,7 @@ var timeIndexMap = new Map();
 var sectionMap = new Map()
 var conflicts = new Map()
 var readyToEdit = true
+var studentSchedInfo = []
 
 
 //Receive Section Data
@@ -27,12 +28,16 @@ function receiveSections(){
   .then(function(data) {
     sectionlist = data.sections
     times = data.timesList
+    studentSchedInfo = data.studentSched
     teacherMap = new Map(Object.entries(data.teacherMap))
     studentMap = new Map(Object.entries(data.studentMap))
     courseRequests = new Map(Object.entries(data.courseRequests))
     timeIndexMap = new Map(Object.entries(data.timeIndex))
     timeSlotMap = new Map(Object.entries(data.timeSlot))
     sectionMap = new Map(Object.entries(data.sectionMap))
+    initializeTeacherMap()
+    initializeStudentMap()
+    console.log(sectionlist)
     
     for(var i =0; i < sectionlist.length; i++)
     {
@@ -62,6 +67,48 @@ function receiveSections(){
  .catch(function(error){
     console.log(error)
   })
+}
+
+function initializeTeacherMap(){
+  const pattern = /[a-z][0-9]/i
+  sectionMap.forEach((value, key) =>{
+    var secs = value
+    for(var i =0; i < secs.length; i++){
+      if(pattern.test(secs[i].time)){
+        var coords = checkTime(secs[i].time)
+        var teacher = secs[i].teacherID
+        var sched = teacherMap.get(teacher.toString()).sched
+        for(var j =0; j< coords.length; j++){
+          sched[coords[j].x][coords[j].y] = 1
+        }
+        teacherMap.get(teacher.toString()).sched = sched
+      }
+    }
+  })
+
+}
+function initializeStudentMap(){
+  console.log(studentSchedInfo)
+  for(var i =0; i < studentSchedInfo.length; i++){
+    var id = studentSchedInfo[i].courseID
+    var sec = studentSchedInfo[i].secNum
+    var stuID = studentSchedInfo[i].studentID
+    var sched = studentMap.get(stuID.toString()).sched
+    var sections = sectionMap.get(id.toString())
+    console.log(sections)
+    for(var j=0; j < sections.length; j++){
+      if(sections[j].sec_num ==sec){
+        var time = sections[j].time
+        console.log(time)
+        var coords = checkTime(time)
+        console.log(coords)
+        for(var k =0; k< coords.length; k++){
+          sched[coords[k].x][coords[k].y] = 1
+        }
+      }
+    }
+    studentMap.get(stuID.toString()).sched = sched
+  }
 }
 
 window.onbeforeunload = function(){

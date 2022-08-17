@@ -14,7 +14,6 @@ var studentMap = new Map();
 //Receive Section Data
 function receiveSections(){
   console.log("WorkeD!!!!!")
-  /*
   fetch("/", {
     method: "POST",})
   .then(function(response) {
@@ -28,7 +27,6 @@ function receiveSections(){
  .catch(function(error){
     console.log(error)
   })
-  */
 }
 
 //Upload section data
@@ -237,6 +235,14 @@ function deleteTime(name){
           },
           body: JSON.stringify({name: name}),
           })
+}
+function keepSchedData(){
+  console.log("Here")
+  var sched = document.getElementById('enterSched')
+  var times = document.getElementById('enterTimes')
+  sched.hidden = false
+  times.hidden = false
+
 }
 
 
