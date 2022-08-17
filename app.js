@@ -58,7 +58,7 @@ var grid = []
 var timeSlotList = []
 
 var studentSchedInfo = []
-
+/*
 const client = new Client({
   user: 'daniellebodine',
   host: 'localhost',
@@ -66,6 +66,13 @@ const client = new Client({
   password: 'secretpassword',
   port: 5432,
 })
+*/
+const client = new Client({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 client.connect()
 

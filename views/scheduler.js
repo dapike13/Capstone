@@ -117,7 +117,7 @@ window.onbeforeunload = function(){
 
 function scheduleAll(){
   for(var i =0; i < sectionlist.length; i++){
-    //scheduleCourse(sectionlist[i].course_id, [])
+    scheduleCourse(sectionlist[i].course_id)
   }
 }
 
@@ -275,7 +275,7 @@ function scheduleCourses(){
     }
   for(var i =0; i < coursesToSchedule.length; i++)
   {
-    scheduleCourse(coursesToSchedule[i], [])
+    scheduleCourse(coursesToSchedule[i])
   }
 }
 //Send current state to the server
@@ -887,6 +887,20 @@ function unscheduleCourse(c) {
     unscheduleSection(c, i+1)
   }
 
+}
+function unscheduleCourses(){
+  var coursesToUnschedule = []
+  for(var i =0; i < courseID.length; i++)
+    {
+      var x = document.getElementById(courseID[i]+"check")
+      if(x.checked){coursesToUnschedule.push(courseID[i])}
+    }
+  for(var i =0; i < coursesToUnschedule.length; i++)
+  {
+    unscheduleCourse(coursesToUnschedule[i].toString())
+    unscheduleStudents(coursesToUnschedule[i].toString())
+    updateCourseHTML(coursesToUnschedule[i].toString())
+  }
 }
 
 function makeStuAvailMap(c, timeSlotList){
