@@ -6,7 +6,7 @@ const express = require('express')
 const app = express()
 
 const {Client} = require('pg')
-const port = 3000
+const port = process.env.PORT || 3000
 
 const bodyParser = require("body-parser")
 const bcrypt = require("bcrypt")
@@ -58,7 +58,7 @@ var grid = []
 var timeSlotList = []
 
 var studentSchedInfo = []
-/*
+
 const client = new Client({
   user: 'daniellebodine',
   host: 'localhost',
@@ -66,13 +66,14 @@ const client = new Client({
   password: 'secretpassword',
   port: 5432,
 })
-*/
+/*
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 });
+*/
 
 client.connect()
 
@@ -336,8 +337,21 @@ app.get('/data', (req, res) => {
 
   })
 
+//Insert Courses from csv to database
+app.post('/courses', (req, res) => {
+  for(var i =0; i < req.body.data.length; i++){
+    const pattern = /[0-9]/
+    if(!pattern.test(req.body.data[i].grade)){req.body.data[i].grade = null}
+      else{req.body.data[i].grade = parseInt(req.body.data[i].grade) }
+    client
+      .query("INSERT INTO courses VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+        [parseInt(req.body.data[i].course_id), req.body.data[i].name, req.body.data[i].dept,req.body.data[i].credits, req.body.data[i].core, req.body.data[i].grade, null, null])
+      .catch(e => console.log(e))
+  }
+})
+
 //Insert data from csv into sections
-app.post('/data1', (req, res) => {
+app.post('/sectionData', (req, res) => {
   var sectionlist = []
   for(var i =0; i < req.body.data.length; i++)
   {
@@ -785,7 +799,7 @@ app.get('/', (req, res) => {
   res.render('index', {'err': [], 'gridlist': grid, 'timeSlots': timeSlotList})
   })  
 
-app.listen(port || process.env.PORT, () => {
+app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 

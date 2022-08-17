@@ -30,7 +30,7 @@ function receiveSections(){
 }
 
 //Upload section data
-function myF() {
+function uploadSectionData() {
       const myForm = document.getElementById('myForm');
       const csvFile = document.getElementById('csvFile');
 
@@ -42,8 +42,8 @@ function myF() {
         const text = e.target.result;
         //document.write(text)
         const data = csvToArray(text)
-        document.write(JSON.stringify(data));
-        fetch("/data", {
+        //document.write(JSON.stringify(data));
+        fetch("/sectionData", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -56,8 +56,7 @@ function myF() {
 }
 
 //Upload student schedule data
-function myS() {
-  console.log("YEAH")
+function uploadStudentData() {
       const myForm = document.getElementById('StuSched');
       const csvFile = document.getElementById('sched');
 
@@ -66,11 +65,9 @@ function myS() {
         const input = csvFile.files[0];
         const reader = new FileReader();
       reader.onload = function (e) {
-        
         const text = e.target.result;
-        //document.write(text)
         const data = csvToArray(text)
-        document.write(JSON.stringify(data));
+        //document.write(JSON.stringify(data));
         fetch("/sched", {
           method: "POST",
           headers: {
@@ -82,6 +79,34 @@ function myS() {
      reader.readAsText(input);
    })
 }
+
+//Upload student schedule data
+function uploadCourseData() {
+      const myForm = document.getElementById('courses');
+      const csvFile = document.getElementById('courseInput');
+
+      myForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+        const input = csvFile.files[0];
+        const reader = new FileReader();
+      reader.onload = function (e) {
+        const text = e.target.result;
+        const data = csvToArray(text)
+        //document.write(JSON.stringify(data));
+        fetch("/courses", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({data: data}),
+          })
+     }
+     reader.readAsText(input);
+   })
+}
+
+
+
 
 function scheduleCheck(s){
   console.log(s);
@@ -167,6 +192,7 @@ function getItem(){
   var sched = document.getElementById('enterSched')
   var times = document.getElementById('enterTimes')
   var user = document.getElementById('enterUser')
+  var courses = document.getElementById('enterCourses')
     
   if(s == 'sections'){
     sec.hidden = false
@@ -174,6 +200,7 @@ function getItem(){
     sched.hidden = true
     times.hidden = true
     user.hidden = true
+    courses.hidden = true
   }
   else if(s == 'students'){
     stu.hidden = false
@@ -181,6 +208,7 @@ function getItem(){
     sched.hidden = true
     times.hidden = true
     user.hidden = true
+    courses.hidden = true
   }
   else if(s == 'teachers'){
     stu.hidden = true
@@ -188,6 +216,7 @@ function getItem(){
     sched.hidden = true
     times.hidden = true
     user.hidden = true
+    courses.hidden = true
   }
   else if(s == 'data'){
     stu.hidden = true
@@ -195,6 +224,7 @@ function getItem(){
     sched.hidden = false
     times.hidden = false
     user.hidden = true
+    courses.hidden = true
   }
   else if(s =='user'){
     stu.hidden = true
@@ -202,12 +232,22 @@ function getItem(){
     sched.hidden = true
     times.hidden = true
     user.hidden = false
+    courses.hidden = true
+  }
+  else if(s == "courses"){
+    stu.hidden = true
+    sec.hidden = true
+    sched.hidden = true
+    times.hidden = true
+    user.hidden = true
+    courses.hidden = false
   }
   else{
     stu.hidden = true
     sec.hidden = true
     sched.hidden = true
     times.hidden = true
+    courses.hidden = true
   }
   console.log(s)
 }

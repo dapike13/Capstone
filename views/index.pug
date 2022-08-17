@@ -25,10 +25,11 @@ html
 			<label for="dataEntry"> Select a data entry option: </label>
 				<select name = "dataEntry" id="dataEntry" onchange = 'getItem()'>
 					<option value="selectOp">Select</option>
-					<option value="sections">Sections</option>
-					<option value="students">Students</option>
-					<option value="teachers">Teachers</option>
-					<option value="data">Schedule Data</option>
+					<option value="courses">1. Courses</option>
+					<option value="sections">2. Sections</option>
+					<option value="students">3. Students</option>
+					<option value="teachers">4. Teachers</option>
+					<option value="data">5. Schedule Data</option>
 					<option value="user">User</option>
 				</select>
 		</div>
@@ -40,7 +41,7 @@ html
 			<form id = 'myForm'>
 				<input type = "file" id = 'csvFile' accept = ".csv" />
 				<br/>
-				<input type = "submit" value = "upload" onclick = 'myF()'/>
+				<input type = "submit" value = "upload" onclick = 'uploadSectionData()'/>
 			</form>
 		</div>
 
@@ -49,7 +50,16 @@ html
 			<form id = 'StuSched'>
 				<input type = "file" id = 'sched' accept = ".csv" />
 				<br/>
-				<input type = "submit" value = "upload" onclick = 'myS()'/>
+				<input type = "submit" value = "upload" onclick = 'uploadStudentData()'/>
+			</form>
+		</div>
+
+		<div class="courses" id = 'enterCourses' hidden>
+			<h4>Upload Courses</h4>
+			<form id = 'courses'>
+				<input type = "file" id = 'courseInput' accept = ".csv" />
+				<br/>
+				<input type = "submit" value = "upload" onclick = 'uploadCourseData()'/>
 			</form>
 		</div>
 
