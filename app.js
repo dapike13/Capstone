@@ -785,7 +785,7 @@ app.get('/', (req, res) => {
   res.render('index', {'err': [], 'gridlist': grid, 'timeSlots': timeSlotList})
   })  
 
-app.listen(port, () => {
+app.listen(port || process.env.PORT, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
