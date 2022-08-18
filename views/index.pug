@@ -81,6 +81,7 @@ html
 			<h4> Schedule Data </h4>
 			<h5>Enter Time Slot Information </h5>
 			<p style='text-align:left'> Enter the name of the timeslot and a list of the periods</p>
+			<form id = 'addTimes' action='/times' method = 'POST'>
 			<div>
 					<label for="timeEntry"> Enter Name of Timeslot: </label>
 					<input type = "text" id = "numPer" name = "timeSlotName" required>
@@ -90,8 +91,9 @@ html
 				<input type = "text" id = "times" name = "timeSlots" required>
 			</div>
 			<div>
-				<input type ="submit" value = "Add to List" onclick="getTimeSlots()" />
+				<input type ="submit" value = "Add to List"/>
 			</div>
+		</form>
 			ul 
 				each val in err
 					li= val.message
@@ -106,9 +108,9 @@ html
 						th= 'TIME SLOT'
 					for t in timeSlots
 						tr
-							td <button type="button" class = "button" id ='#{t.name}edit'> Edit</button> <button type="button" class = "button" id ='#{t.name}delete' onclick="deleteTime('#{t.name}')">Delete</button>  
+							td <button type="button" class = "button" id ='#{t.name}edit' onclick="editTime('#{t.name}')"> Edit</button> <button type="button" class = "button" id ='#{t.name}delete' onclick="deleteTime('#{t.name}')">Delete</button>  
 							td= t.name
-							td <p> #{t.times} </p> <input type = 'text', value = "#{t.times}", id = '#{t.name}text', name = "times" hidden/>
+							td <p id ='#{t.name}times'> #{t.times} </p> <input type = 'text', value = "#{t.times}", id = '#{t.name}text', name = "times" hidden/>
 			</div>
 		</div>
 

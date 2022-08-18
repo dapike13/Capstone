@@ -58,8 +58,9 @@ var grid = []
 var timeSlotList = []
 
 var studentSchedInfo = []
+var students = []
 
-/*
+
 const client = new Client({
   user: 'daniellebodine',
   host: 'localhost',
@@ -67,14 +68,15 @@ const client = new Client({
   password: 'secretpassword',
   port: 5432,
 })
-*/
 
+/*
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 });
+*/
 
 
 client.connect()
@@ -160,7 +162,14 @@ app.post('/times', (req, res) => {
   console.log("In the post")
   var errors = []
   let {timeSlotName, timeSlots, name} = req.body;
-  if(timeSlotName !=undefined && timeSlots!=undefined){
+  console.log(name)
+  console.log(timeSlotName)
+  if(name=='edit'){
+    console.log("TRUE")
+    timeSlotMap.set(timeSlotName, timeSlots)
+    console.log(timeSlotMap.get(timeSlotName))
+  }
+  else if(timeSlotName !=undefined && timeSlots!=undefined){
     console.log({timeSlotName, timeSlots, name})
     if(timeSlotMap.has(timeSlotName)){
       errors.push({message: "Name already taken"})
@@ -492,11 +501,24 @@ app.get('/students', (req, res) =>{
       res.render('students', {'stu':students})
     })
     .catch(e => console.log(e))
+    console.log(students)
 })
 
 //Get specific student schedule based on ID
 app.get('/students/:id', (req, res) =>{
-  console.log(req.params.id)
+  var name=''
+  client
+    .query('SELECT student_id, first_name, last_name, grade FROM students;')
+    .then(result => {
+      for(var i=0; i <result.rows.length;i++)
+      {
+        if(result.rows[i].student_id ==req.params.id){
+          name = result.rows[i].student_id + ": " + result.rows[i].first_name + " "+result.rows[i].last_name + " " + result.rows[i].grade
+          break
+        }
+      }
+    })
+
   var requests = studentRequests.get(parseInt(req.params.id))
   console.log(requests)
   var actualReq = []
@@ -507,13 +529,26 @@ app.get('/students/:id', (req, res) =>{
       if(requests[i] == sectionlist[j].course_id){
               var r = {
                 'id': requests[i],
-                'name': sectionlist[j].name
+                'name': sectionlist[j].name,
+                'conflict': false,
               }
               j = sectionlist.length
       }
     }
     actualReq.push(r)
         }
+  for(var j=0; j<actualReq.length; j++){
+    for(var i=0; i < sectionlist.length; i++){
+      if(sectionlist[i].course_id == actualReq[j].id){
+        if(sectionlist[i].conflicts.includes(parseInt(req.params.id))){
+          actualReq[j].conflict = true
+          break
+      }
+      break
+    }
+
+  }
+  }
   var sched = []
   client
     .query('SELECT student_schedule.course_id, student_schedule.sec_number, sections.time, teacher_schedule.teacher_id FROM student_schedule INNER JOIN sections ON student_schedule.course_id = sections.course_id AND student_schedule.sec_number = sections.sec_number INNER JOIN teacher_schedule ON teacher_schedule.course_id = student_schedule.course_id AND student_schedule.sec_number = teacher_schedule.sec_number WHERE student_schedule.student_id = '+ req.params.id)
@@ -539,7 +574,7 @@ app.get('/students/:id', (req, res) =>{
 
         sched.push(sect)
       }
-      res.render('studentSched', {'requests': actualReq, 'schedule': sched})
+      res.render('studentSched', {'requests': actualReq, 'schedule': sched, 'name': name})
 
     })
 })
@@ -633,6 +668,8 @@ app.get('/scheduler', (req, res) =>{
       'grade': result.rows[i].grade,
       'timeSlot': result.rows[i].time_slot,
       'students': [],
+      'conflicts': [],
+      'numConflicts':0,
       'edit': true,
     } 
     if(sectionMap.has(result.rows[i].course_id)){
@@ -817,7 +854,7 @@ function testTS(){
 
 }
 //checkNotAuthenticated
-app.get('/', (req, res) => {
+app.get('/', checkNotAuthenticated, (req, res) => {
   res.render('index', {'err': [], 'gridlist': grid, 'timeSlots': timeSlotList})
   })  
 

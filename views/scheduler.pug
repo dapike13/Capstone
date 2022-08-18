@@ -67,7 +67,8 @@ html
 	<div>
 	table(id = 'sectionTable')
 		tr
-			th= 'COURSE ID'
+			th
+				<p>COURSE ID</p> <input type = 'checkbox' id ='mainCheck' name = 'mainCheck' onclick="clearChecks()">
 			th= 'NAME'
 			th= 'SECTION'
 			th= 'TIME_SLOT'
@@ -95,7 +96,12 @@ html
 				td <input type = 'text', value = "#{section.time}", id = '#{section.course_id}label#{section.sec_num}', name = "section" hidden/> <input type = 'submit', value = 'Update', id = '#{section.course_id}update#{section.sec_num}', onclick = 'update("#{section.course_id}", "#{section.sec_num}")' hidden/> <input type = 'submit', value = 'Cancel', id = '#{section.course_id}cancel#{section.sec_num}', onclick = 'cancel("#{section.course_id}", "#{section.sec_num}")' hidden/>
 					<h5 id ='#{section.course_id}text#{section.sec_num}'> #{section.time} </h5> <button type = 'button' id ='#{section.course_id}edit#{section.sec_num}'  onclick='edit("#{section.course_id}", "#{section.sec_num}")' hidden> Edit </button> <h6 id ='#{section.course_id}error#{section.sec_num}' hidden> Error </h6>
 				td <p id='#{section.course_id}num#{section.sec_num}'> #{section.numStud} </p>
-				td= 0
+				if section.sec_num == 1
+					td 
+						<p id='#{section.course_id}conflict1' style='color:red'> #{section.numConflicts} </p>
+				else
+					td
+						<p> </p>
 	</div>
 </div>
 

@@ -112,7 +112,8 @@ function initializeStudentMap(){
 }
 
 window.onbeforeunload = function(){
-  return 'Are you sure you want to leave?';
+  return savePrompt()
+  //return 'Are you sure you want to leave?';
 };
 
 function scheduleAll(){
@@ -398,6 +399,7 @@ function scheduleCourse(c){
           }
         }
       })
+      console.log("possTime: " + possTime)
       if(possTime == undefined){
         possTime = backup
       }
@@ -840,7 +842,6 @@ function unscheduleSection(c, s){
     if(secs[i].sec_num ==s){
       var currTime = secs[i].time
       secs[i].time = ''
-      secs[i].numStud = 0
       var tID = secs[i].teacherID
     }
   }
@@ -853,6 +854,7 @@ function unscheduleSection(c, s){
     avail[x][y]=0
   }
   teacherMap.get(tID.toString()).sched = avail
+  console.log(teacherMap)
 }
 
 function unscheduleStudents(c){
@@ -860,12 +862,9 @@ function unscheduleStudents(c){
   for(var i=0; i < secs.length; i++){
     var time = secs[i].time
     var students = secs[i].students
-    console.log("students")
-    console.log(students)
     for(var j =0; j <students.length; j++){
       var stuSched = studentMap.get(students[j].toString()).sched
       var listOfCoords = checkTime(time)
-      console.log(listOfCoords)
       for(var k =0; k < listOfCoords.length; k++){
         var x = listOfCoords[k].x
         var y = listOfCoords[k].y
@@ -897,8 +896,8 @@ function unscheduleCourses(){
     }
   for(var i =0; i < coursesToUnschedule.length; i++)
   {
-    unscheduleCourse(coursesToUnschedule[i].toString())
     unscheduleStudents(coursesToUnschedule[i].toString())
+    unscheduleCourse(coursesToUnschedule[i].toString())
     updateCourseHTML(coursesToUnschedule[i].toString())
   }
 }
@@ -938,10 +937,13 @@ function makeStuAvailMap(c, timeSlotList){
 
 function scheduleStudents(c, stuAvailMap){
   var listOfSections = sectionMap.get(c.toString())
+  for(var i=0; i < listOfSections.length; i++){
+    listOfSections[i].numStud =0
+  }
   var maxClassSize = Math.ceil(stuAvailMap.size/listOfSections.length)
-
   stuAvailMap.forEach((value, key) =>{
     var conflict = true
+    var ind = 0
     for(var i =0; i < listOfSections.length; i++){
       if(value.listTimes.includes(listOfSections[i].time) && listOfSections[i].numStud < maxClassSize){
         var possTime = listOfSections[i].time
@@ -959,6 +961,9 @@ function scheduleStudents(c, stuAvailMap){
     }
     if(conflict == true){
       console.log("conflict: " +conflict)
+      console.log("ID"+ key)
+      listOfSections[0].conflicts.push(key)
+      listOfSections[0].numConflicts++
       studentMap.get(key.toString()).conflictList.push(listOfSections[0].course_id)
       if(conflicts.has(listOfSections[0].course_id)){
         conflicts.get(listOfSections[0].course_id).push(key)
@@ -978,6 +983,9 @@ function updateSectionHTML(c, s){
   textTime.innerHTML = sections[s-1].time
   var numStudText = document.getElementById(c+"num"+s)
   numStudText.innerHTML = sections[s-1].numStud
+
+  var con = document.getElementById(c+"conflict"+1)
+  con.innerHTML = sections[0].numConflicts
 }
 
 function updateCourseHTML(c){
@@ -985,7 +993,6 @@ function updateCourseHTML(c){
   for(var i =0; i < sections.length;i++){
     updateSectionHTML(c, sections[i].sec_num)
   }
-
 }
 
 function checkFree(availMap, time){
@@ -1004,6 +1011,22 @@ function checkFree(availMap, time){
   }
 }
 
+function clearChecks(){
+  var y = document.getElementById('mainCheck')
+  var check = false
+  if(y.checked){check = true}
+  for(var i =0; i < courseID.length; i++)
+  {
+    var x = document.getElementById(courseID[i]+"check")
+    x.checked = check
+  }
+
+}
+
+
+//conflicts needs to be uploaded to database
+//delete section does not update the Map or database 
+//Update other section nums too
 
 
 

@@ -336,9 +336,35 @@ function getItem(){
   console.log(s)
 }
 
+var editReady = 1
+
 function editTime(name){
-  var edit = document.getElementById(name+text)
-  edit.hidden = false
+  console.log(name)
+  var btn = document.getElementById(name+'edit')
+  var edit = document.getElementById(name+'text')
+  if(editReady ==1){
+    edit.hidden = false
+    btn.innerHTML = 'Done'
+    editReady = 0
+  }
+  else{
+    console.log(edit.value)
+    var text = document.getElementById(name+'times')
+    text.innerHTML = edit.value
+    edit.hidden = true
+    btn.innerHTML ='Edit'
+    editReady = 1
+
+    fetch("/times", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({timeSlotName: name ,name: 'edit', timeSlots: edit.value}),
+          })
+
+  }
+
 }
 
 function deleteTime(name){
@@ -352,7 +378,7 @@ function deleteTime(name){
     }
   }
   console.log(name)
-  fetch("/", {
+  fetch("/times", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

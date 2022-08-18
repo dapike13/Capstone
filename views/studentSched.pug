@@ -7,7 +7,7 @@ html
 	body
 		script
 			include index.js
-		h1= 'Student Name'
+		h1= name
 
 		h3= 'Schedule'
 		table
@@ -30,5 +30,13 @@ html
 				th= 'Course'
 			for r in requests
 				tr
-					td= r.id
-					td= r.name
+					if r.conflict == true
+						<td style='background-color: #B18EB1'> #{r.id}</td>
+					else
+						td= r.id
+					if r.conflict == true
+						<td style='background-color: #B18EB1'> #{r.name}</td>
+					else
+						td= r.name
+
+
