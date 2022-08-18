@@ -776,7 +776,7 @@ function addTableRows(sections){
     cell7.innerHTML = sections[i].numStud
 
     var cell8 = row.insertCell(7)
-    cell8.innerHTML = 0
+    cell8.innerHTML = sections[i].numConflicts
   }
 }
 

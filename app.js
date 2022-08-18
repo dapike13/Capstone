@@ -437,8 +437,8 @@ app.post("/scheduler", (req, res) => {
   const objTM = Object.fromEntries(teacherMap)
   const objSM = Object.fromEntries(studentMap)
   const objRM = Object.fromEntries(courseRequests)
-  const objTIM = Object.fromEntries(testTimesIndexMap)
-  const objTSM = Object.fromEntries(testTimeSlotMap)
+  const objTIM = Object.fromEntries(timeIndexMap)
+  const objTSM = Object.fromEntries(timeSlotMap)
   const objSecM = Object.fromEntries(sectionMap)
   res.json({sections:sectionlist, teacherMap:objTM, studentMap:objSM, courseRequests: objRM, timesList:times, timeIndex:objTIM, timeSlot:objTSM, sectionMap:objSecM, studentSched: studentSchedInfo})
 })
@@ -448,7 +448,7 @@ app.post("/save", (req, res) => {
     .query("DELETE FROM student_schedule")
     .catch(e => console.log(e))
   client
-    .query("DELTE FROM student_conflicts")
+    .query("DELETE FROM student_conflicts")
     .catch(e => console.log(e))
   //studentMap = new Map(Object.entries(req.body.studentSched))
   sectionlist = req.body.sections
@@ -696,7 +696,7 @@ app.get('/scheduler', (req, res) =>{
     if(!teacherMap.has(result.rows[i].teacher_id)) {
       var teacherInfo = {
         'name': result.rows[i].last_name,
-        'sched': testMakeGrid(),
+        'sched': makeGrid(),
         'sections': [],
       }
       teacherMap.set(result.rows[i].teacher_id, teacherInfo);
@@ -764,7 +764,7 @@ app.get('/scheduler', (req, res) =>{
           if(!studentMap.has(result.rows[i].student_id)){
             var studentInfo ={
               'requests': studentRequests.get(result.rows[i].student_id),
-              'sched': testMakeGrid(),
+              'sched': makeGrid(),
               'sections': [],
               'conflictList':[]
             }
