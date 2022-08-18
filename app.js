@@ -60,7 +60,7 @@ var timeSlotList = []
 var studentSchedInfo = []
 var students = []
 
-/*
+
 const client = new Client({
   user: 'daniellebodine',
   host: 'localhost',
@@ -68,9 +68,9 @@ const client = new Client({
   password: 'secretpassword',
   port: 5432,
 })
-*/
 
 
+/*
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -78,7 +78,7 @@ const client = new Client({
   }
 });
 
-
+*/
 
 client.connect()
 
@@ -447,6 +447,9 @@ app.post("/save", (req, res) => {
   client
     .query("DELETE FROM student_schedule")
     .catch(e => console.log(e))
+  client
+    .query("DELTE FROM student_conflicts")
+    .catch(e => console.log(e))
   //studentMap = new Map(Object.entries(req.body.studentSched))
   sectionlist = req.body.sections
   //Could modify so only update ones that have been changed...
@@ -466,6 +469,17 @@ app.post("/save", (req, res) => {
           .catch(e => console.log(e))
     }
   }
+  for(var j=0; j < sectionlist.length; j++){
+    var course = sectionlist[j].course_id
+    var conflicts = sectionlist[j].conflicts
+    for(var k =0; k < conflicts.length; k++){
+      client
+        .query('INSERT INTO student_conflicts VALUES ($1, $2)', [course, parseInt(conflicts[k])])
+        .catch(e => console.log(e))
+    }
+  }
+
+
 })
 
 app.post('/edit', (req, res) => {
@@ -688,10 +702,6 @@ app.get('/scheduler', (req, res) =>{
       teacherMap.set(result.rows[i].teacher_id, teacherInfo);
     }
     }
-    sectionMap.forEach((value, key) =>{
-      sectionlist = sectionlist.concat(value)
-    })
-      res.render('scheduler', {'sectionlist': sectionlist})
   })
     .catch(e => console.log(e))
     client
@@ -708,9 +718,24 @@ app.get('/scheduler', (req, res) =>{
       })
       .catch(e => console.log(e))
 
-           
-      console.log("sectionlist")
-      console.log(sectionlist)
+      client
+        .query('SELECT course_id, student_id FROM student_conflicts')
+        .then(result => {
+          for(var i =0; i < result.rows.length; i++){
+            var secs = sectionMap.get(result.rows[i].course_id)
+            secs[0].conflicts.push(result.rows[i].student_id)
+            secs[0].numConflicts++;
+          }
+          console.log(sectionMap)
+
+          sectionMap.forEach((value, key) =>{
+        sectionlist = sectionlist.concat(value)
+    })
+        res.render('scheduler', {'sectionlist': sectionlist})
+        })
+        .catch(e => console.log(e))
+
+
     if(start ==0){
       start++;
       client

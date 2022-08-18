@@ -37,7 +37,6 @@ function receiveSections(){
     sectionMap = new Map(Object.entries(data.sectionMap))
     initializeTeacherMap()
     initializeStudentMap()
-    console.log(sectionlist)
     
     for(var i =0; i < sectionlist.length; i++)
     {
@@ -56,11 +55,11 @@ function receiveSections(){
     {
       var x = document.getElementById(courseID[i]+"check")
 
-      x.hidden= false
+      x.hidden=false
       var k = courseSections.get(courseID[i])
       for(var j =0; j < k.length; j++){
         var y = document.getElementById(courseID[i]+"edit"+k[j])
-        y.hidden= false
+        y.hidden=false
       }
     }
   })
