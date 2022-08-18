@@ -2,7 +2,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const {Client} = require('pg')
 const bcrypt = require("bcrypt")
 
-
+/*
 const client = new Client({
   user: 'daniellebodine',
   host: 'localhost',
@@ -10,17 +10,17 @@ const client = new Client({
   password: 'secretpassword',
   port: 5432,
 })
+*/
 
 
 
-/*
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 });
-*/
+
 
 
 
