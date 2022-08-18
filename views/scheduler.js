@@ -132,8 +132,9 @@ function editCourse(){
     var course = coursesToEdit[i]
 
     var sections = sectionMap.get(course.toString())
+    console.log(sections)
     
-    for(var j =0 ; j< sections.length; j++){
+    for(var j =0 ; j<sections.length; j++){
       var timeslot =document.getElementById(course+ "timeSlot" + sections[j].sec_num)
       var teachers = document.getElementById(course + "tID" + sections[j].sec_num)
       var savebtn = document.getElementById(course+ "save" + sections[j].sec_num)
@@ -182,19 +183,29 @@ function deleteSection(c, s){
       if(c.toString() == tdCourse[0].children[0].innerHTML.trim() && tdCourse[2].innerHTML == s.toString())
       { 
         found = true
-        tr[i].style.display= 'none'
+        table.deleteRow(i)
+        //tr[i].style.display= 'none'
         break
       }
       if(c.toString()== tdCourse[0].children[1].innerHTML.trim() && tdCourse[2].innerHTML == s.toString())
       {
         found = true
+        table.deleteRow(i)
         tr[i].style.display= 'none'
         break
       }
     }
 }
-//Update sectionList
-//Update sectionNums!
+  if(found == true){
+    var secs = sectionMap.get(c.toString())
+    for(var i=0; i < secs.length; i++){
+      if(secs[i].sec_num == s){
+        secs.splice(i, 1)
+        sectionMap.set(c.toString(), secs)
+      }
+    }
+  }
+  console.log(sectionMap)
 }
 function editSection(c, s){
   var sections = sectionMap.get(c)
@@ -716,10 +727,10 @@ function makeHeatMap(){
         }
       })
       console.log(time)
-      if(scheduleCounts[i][j]/listOfSections.length > 0.7){
+      if(scheduleCounts[i][j]>=4){
         document.getElementById(time.trim()).style.backgroundColor = 'red'
       }
-      else if(scheduleCounts[i][j]/listOfSections.length > 0.4){
+      else if(scheduleCounts[i][j]>=2){
         document.getElementById(time.trim()).style.backgroundColor = 'yellow'
       }
       else{
@@ -1022,8 +1033,6 @@ function clearChecks(){
 
 }
 
-
-//conflicts needs to be uploaded to database
 //delete section does not update the Map or database 
 //Update other section nums too
 

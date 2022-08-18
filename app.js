@@ -726,8 +726,6 @@ app.get('/scheduler', (req, res) =>{
             secs[0].conflicts.push(result.rows[i].student_id)
             secs[0].numConflicts++;
           }
-          console.log(sectionMap)
-
           sectionMap.forEach((value, key) =>{
         sectionlist = sectionlist.concat(value)
     })
