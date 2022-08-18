@@ -780,7 +780,6 @@ function addTableRows(sections){
   }
 }
 
-
 //Updates time in SectionMap, HTML
 //Updates teacher matrix
 function scheduleSection(c, s, t){

@@ -69,9 +69,6 @@ const client = new Client({
   port: 5432,
 })
 */
-
-
-
 const client = new Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
